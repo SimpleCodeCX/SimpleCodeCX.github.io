@@ -1,12 +1,12 @@
 <!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="技术、音乐、个人博客"><title>关于js正则表达式的贪婪和懒惰模式 | Simple的个人博客</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">关于js正则表达式的贪婪和懒惰模式</h1><a id="logo" href="/.">Simple的个人博客</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">关于js正则表达式的贪婪和懒惰模式</h1><div class="post-meta">11/30/2018</div><div class="post-content"><h3 id="1、量词"><a href="#1、量词" class="headerlink" title="1、量词"></a>1、量词</h3><p>  正则表达式的量词有：* + ? {}</p>
 <pre><code>* : 匹配0次到多次
-+ : 匹配1次到多次
-? : 匹配0次或1次
-{n,m} : 匹配至少n次，最多m次
-{n} : 匹配n次
-{0,} : 等价于*
-{1,} : 等价于+
-{0,1} : 等价于?
+    + : 匹配1次到多次
+    ? : 匹配0次或1次
+    {n,m} : 匹配至少n次，最多m次
+    {n} : 匹配n次
+    {0,} : 等价于*
+    {1,} : 等价于+
+    {0,1} : 等价于?
 </code></pre><p>  量词默认是贪婪模式，当在量词后面加上一个问号?时，就变成了懒惰模式。</p>
 <h3 id="2、贪婪模式"><a href="#2、贪婪模式" class="headerlink" title="2、贪婪模式"></a>2、贪婪模式</h3><p>  使用量词(* + ? {})时，默认为贪婪模式。<br>  贪婪模式尝试匹配最多字符，具体怎么做呢？<br>  首先尝试匹配整个字符串，如果匹配不成功，就去掉最后一个字符，并再次尝试匹配，直到匹配成功或者字符串为空为止。<br>  举个例子：<br>  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">demo1.js</span><br><span class="line"><span class="keyword">let</span> str1 = <span class="string">'xxx123xxxxxxxxxx123xxx'</span>;</span><br><span class="line"><span class="keyword">let</span> regex1 = <span class="regexp">/.*123/</span>; </span><br><span class="line"><span class="built_in">console</span>.log(regex1.exec(str1)[<span class="number">0</span>]);</span><br></pre></td></tr></table></figure></p>
 <p>  输出结果：’xxx123xxxxxxxxxx123’<br>  分析demo1代码,由于使用<em>量词，因此默认为贪婪模式，会尝试匹配最多字符，即匹配全部字符<br>  第1次尝试：’xxx123xxxxxxxxxx123xxx’ 与 /.</em>123/ 不匹配<br>  第2次尝试：’xxx123xxxxxxxxxx123xx’ 与 /.<em>123/ 不匹配<br>  第3次尝试：’xxx123xxxxxxxxxx123x’ 与 /.</em>123/ 不匹配<br>  第4次尝试：’xxx123xxxxxxxxxx123’ 与 /.*123/ 匹配<br>  因此匹配结果为：’xxx123xxxxxxxxxx123’</p>
