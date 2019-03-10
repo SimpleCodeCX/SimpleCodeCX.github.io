@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com" />
+  
+  
+
+  <title>
+    
+    基于mocha、should.js、karma、travis ci实现前端自动化持续测试 |
+    
+    Simple的个人博客
+  </title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta name="keywords" content="Hexo, theme-bmw" />
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n', 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+  <meta name="description" content="技术、音乐、个人博客">
+  
+
+  
+
+  
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+
+  
+  <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+  <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+<body>
+
+  
+
+  <div id="app">
+
+    <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">Simple</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a 
+              href="/"
+              target="_self"
+            >
+              首页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a 
+              href="/archives/"
+              target="_self"
+            >
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a 
+              href="/categories/"
+              target="_self"
+            >
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a 
+              href="/tags/"
+              target="_self"
+            >
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          
+            <a 
+              href="/about/"
+              target="_self"
+            >
+              关于
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/music/">
+          
+            <a 
+              href="/music/"
+              target="_self"
+            >
+              音乐
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else>其他</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a 
+                    href="https://github.com/SimpleCodeCX" 
+                    target="_blank"
+                  >
+                    Github
+                  </a>
+                </li>
+              
+                <li>
+                  <a 
+                    href="https://www.jianshu.com/u/9be5a5a0beb9" 
+                    target="_blank"
+                  >
+                    简书
+                  </a>
+                </li>
+              
+                <li>
+                  <a 
+                    href="https://juejin.im/user/5bec5067e51d451402495715" 
+                    target="_blank"
+                  >
+                    掘金
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+    
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>基于mocha、should.js、karma、travis ci实现前端自动化持续测试</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2018-11-08
+    </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="基于mocha、should-js、karma、travis-ci实现前端自动化持续测试"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      </p>
+</blockquote>
+<h3 id="前颜（yan）"><a href="#前颜（yan）" class="headerlink" title="前颜（yan）"></a>前颜（yan）</h3><p>首先你觉得测试重要吗？为什么重要？</p>
+<p>这里举个例子，假如你写了一个逻辑稍微比较复杂的函数，这个函数被很多地方调用到，那么当过了N多天之后，你可能快要忘记这里面的逻辑了，此时你可能出于某种原因需要为这个函数增加一些功能，修改这个函数的代码，那么你要怎么做才能做到修改后不影响其他的调用者呢，或者说，你要怎么做，才能快速的知道哪些地方受影响，哪些地方不受影响呢？</p>
+<p>很明显，答案就是：跑测试用例</p>
+<p>对于单元测试，我能想到的好处有：</p>
+<ul>
+<li><p>改进代码设计，提高代码质量：单元测试会强制你对代码进行合理的设计，解耦，写出可测试的代码</p>
+</li>
+<li><p>允许重构，你可以放心的对代码进行修改，因为你有测试用例来确保你的代码能够按符合预期要求</p>
+</li>
+<li><p>快速定位bug</p>
+</li>
+</ul>
+<p>既然单元测试这么重要，那么就应该好好重视起来。</p>
+<h3 id="前端测试框架和库"><a href="#前端测试框架和库" class="headerlink" title="前端测试框架和库"></a>前端测试框架和库</h3><p>目前前端测试框架和库主要有<a href="https://nodejs.org/api/assert.html" target="_blank" rel="noopener">assert</a>、<a href="https://github.com/shouldjs/should.js" target="_blank" rel="noopener">should.js</a>、<a href="https://github.com/Automattic/expect.js" target="_blank" rel="noopener">expect</a>、<a href="https://www.chaijs.com/" target="_blank" rel="noopener">chai</a>、<a href="https://mochajs.org/" target="_blank" rel="noopener">mocha</a>、<a href="https://jasmine.github.io/" target="_blank" rel="noopener">jasmine</a>、<a href="http://karma-runner.github.io/" target="_blank" rel="noopener">karma</a>以及<a href="https://docs.travis-ci.com/user/languages/javascript-with-nodejs/" target="_blank" rel="noopener">travis ci</a>等等。</p>
+<p>其中assert、should.js、expect、chai属于断言库，实现对js代码进行断言测试。</p>
+<p>​而mocha、jasmine属于测试框架，测试框架通过使用断言库对js代码进行测试，生成测试报告，除此之外，测试框架还提供了各种生命周期。</p>
+<p>​karma则属于测试工具，能够模拟各种环境来运行你的测试代码，比如Chrome，Firefox，mobile等等。</p>
+<p>​重点要介绍的是travis ci，是一个远程免费的持续集成（CI）服务，你可以通过配置绑定你github上的项目，并且配置运行环境，实现只要github上有代码更新，travis就会自动运行构建和测试，并反馈运行结果。</p>
+<p>​下面对不同断言库进行简单的介绍：</p>
+<p> ​断言库（主要实现对代码进行测试）</p>
+<ul>
+<li><p>assert ：TDD风格断言，是nodejs的一个断言测试模块，提供的api不是很多</p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">assert.equal(foo, <span class="string">'foo'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>should.jd：BDD风格断言库，should相对于assert有比较丰富的api，并且其语法非常的语义化</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">foo.should.be();  </span><br><span class="line">bar.should.have();</span><br><span class="line">foo.should.bot.be();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>expect：BDD风格断言，语法和should.js类似</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">expect(foo).to.be();</span><br><span class="line">expect(foo).to.eql();</span><br><span class="line">expect(foo).to.be.a();</span><br><span class="line">expect(foo).not.to.be.an();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>chai：支持BDD/TDD双模式，同时支持should/expect/assert三种风格的断言库，还有强大的插件机制</p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">should</span><br><span class="line">chai.should();</span><br><span class="line">foo.should.be.a(<span class="string">'string'</span>);</span><br><span class="line"></span><br><span class="line">expect</span><br><span class="line"><span class="keyword">var</span> expect = chai.expect;</span><br><span class="line">expect(foo).to.be.a(<span class="string">'string'</span>);</span><br><span class="line"></span><br><span class="line">assert</span><br><span class="line"><span class="keyword">var</span> assert = chai.assert;</span><br><span class="line">assert.typeOf(foo, <span class="string">'string'</span>);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>接下来，我将使用mocha、should.js、karma、travis ci实现几个前端js自动化持续测试的demo。大家可以克隆相应的代码下来对应着看，由于篇幅有限，下面只讲关键点。</p>
+<h3 id="demo1-mocha-should-js"><a href="#demo1-mocha-should-js" class="headerlink" title="demo1(mocha+should.js)"></a>demo1(mocha+should.js)</h3><p>特点：直接使用mocha和should.js来跑测试用例。</p>
+<p>代码地址：<a href="https://github.com/SimpleCodeCX/myCode/tree/master/test/demo1" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/myCode/tree/master/test/demo1</a></p>
+<p>关键点说明：</p>
+<p>1 下载相关依赖（mocha和should.js）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm instal -g mocha （全局）</span><br><span class="line">npm install --save-dev should</span><br></pre></td></tr></table></figure>
+<p>2 添加主功能（待测试）代码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#src/main.js</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">add</span>(<span class="params">x, y</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> x + y;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">module</span>.exports = add;</span><br></pre></td></tr></table></figure>
+<p>3 添加测试用例</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#test/test.js</span><br><span class="line"><span class="keyword">var</span> add = <span class="built_in">require</span>(<span class="string">'../src/main'</span>)</span><br><span class="line"></span><br><span class="line">describe(<span class="string">'add'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  it(<span class="string">'8 + 8 = 16'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    add(<span class="number">8</span>, <span class="number">8</span>).should.equal(<span class="number">16</span>);</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>4 配置mocha.opts</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#test/mocha.opts</span><br><span class="line">--<span class="built_in">require</span> should</span><br></pre></td></tr></table></figure>
+<p>关于mocha.opts的更多配置（代替命令行参数）：<a href="https://mochajs.org/#mochaopts" target="_blank" rel="noopener">https://mochajs.org/#mochaopts</a></p>
+<p>5 运行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mocha</span><br></pre></td></tr></table></figure>
+<p>输出测试结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;mocha</span><br><span class="line">add</span><br><span class="line">    √ 8 + 8 = 16</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  1 passing (10ms)</span><br></pre></td></tr></table></figure>
+<h3 id="demo2-mocha-should-js-karma"><a href="#demo2-mocha-should-js-karma" class="headerlink" title="demo2(mocha+should.js+karma)"></a>demo2(mocha+should.js+karma)</h3><p>特点：</p>
+<ul>
+<li>通过karma调用mocha测试框架来进行代码测试</li>
+<li>优点在于karma能模拟浏览器比如Chrome、Firefox来运行测试代码</li>
+</ul>
+<p>代码地址：<a href="https://github.com/SimpleCodeCX/myCode/tree/master/test/demo2" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/myCode/tree/master/test/demo2</a></p>
+<p>关键点说明：</p>
+<p>1 下载相关依赖（mocha、should.js和karma）</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">npm install --save-dev mocha（demo1使用的是全局mocha，这里是karma调用mocha）</span><br><span class="line">npm install --save-dev should</span><br><span class="line">npm install --save-dev karma</span><br><span class="line">npm install --save-dev karma-chrome-launcher</span><br><span class="line">npm install --save-dev karma-mocha</span><br></pre></td></tr></table></figure>
+<p>2 添加主功能（待测试）代码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#src/main.js(注意和demo1的区别)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">add</span>(<span class="params">x, y</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> x + y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>3 添加测试用例</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#test/test.js(注意和demo1的区别)</span><br><span class="line"></span><br><span class="line">describe(<span class="string">'add'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  it(<span class="string">'8 + 8 = 16'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    add(<span class="number">8</span>, <span class="number">8</span>).should.equal(<span class="number">16</span>);</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>4 配置karma（karma.conf.js）</p>
+<p>运行 <code>karma init</code>，按提示操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">Which testing framework do you want to use ?</span><br><span class="line">Press tab to list possible options. Enter to move to the next question.</span><br><span class="line">&gt; mocha</span><br><span class="line"></span><br><span class="line">Do you want to use Require.js ?</span><br><span class="line">This will add Require.js plugin.</span><br><span class="line">Press tab to list possible options. Enter to move to the next question.</span><br><span class="line">&gt; no</span><br><span class="line"></span><br><span class="line">Do you want to capture any browsers automatically ?</span><br><span class="line">Press tab to list possible options. Enter empty string to move to the next question.</span><br><span class="line">&gt; Chrome</span><br><span class="line">&gt;</span><br><span class="line"></span><br><span class="line">What is the location of your source and test files ?</span><br><span class="line">You can use glob patterns, eg. &quot;js/*.js&quot; or &quot;test/**/*Spec.js&quot;.</span><br><span class="line">Enter empty string to move to the next question.</span><br><span class="line">&gt; test/**/*.js</span><br><span class="line">&gt;</span><br><span class="line"></span><br><span class="line">Should any of the files included by the previous patterns be excluded ?</span><br><span class="line">You can use glob patterns, eg. &quot;**/*.swp&quot;.</span><br><span class="line">Enter empty string to move to the next question.</span><br><span class="line">&gt;</span><br><span class="line"></span><br><span class="line">Do you want Karma to watch all the files and run the tests on change ?</span><br><span class="line">Press tab to list possible options.</span><br><span class="line">&gt; yes</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Config file generated at &quot;...\demo2\karma.conf.js&quot;.</span><br></pre></td></tr></table></figure>
+<p>然后在karma.conf.js中的files添加相关的依赖模块：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">files: [</span><br><span class="line">     &apos;node_modules/should/should.js&apos;,</span><br><span class="line">     &apos;test/**/*.js&apos;,</span><br><span class="line">     &apos;src/**/*.js&apos;</span><br><span class="line">   ]</span><br></pre></td></tr></table></figure></p>
+<p>关于karma的更多配置：<a href="http://karma-runner.github.io/3.0/config/configuration-file.html" target="_blank" rel="noopener">http://karma-runner.github.io/3.0/config/configuration-file.html</a></p>
+<p>5 运行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">karma start</span><br></pre></td></tr></table></figure>
+<p>karma会运行chrome浏览器，并且输出测试结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;karma start</span><br><span class="line">08 11 2018 21:01:34.765:WARN [karma]: No captured browser, open http://localhost:9876/</span><br><span class="line">08 11 2018 21:01:34.775:INFO [karma]: Karma v1.7.1 server started at http://0.0.0.0:9876/</span><br><span class="line">08 11 2018 21:01:34.775:INFO [launcher]: Launching browser Chrome with unlimited concurrency</span><br><span class="line">08 11 2018 21:01:34.785:INFO [launcher]: Starting browser Chrome</span><br><span class="line">08 11 2018 21:01:37.456:INFO [Chrome 70.0.3538 (Windows 7.0.0)]: Connected on socket h9aSRbkdzZNTgb2dAAAA with id 46125810</span><br><span class="line">Chrome 70.0.3538 (Windows 7.0.0): Executed 1 of 1 SUCCESS (0.007 secs / 0.002 secs)</span><br></pre></td></tr></table></figure>
+<h3 id="demo3-mocha-should-js-karma-travis"><a href="#demo3-mocha-should-js-karma-travis" class="headerlink" title="demo3(mocha+should.js+karma+travis)"></a>demo3(mocha+should.js+karma+travis)</h3><p>代码地址：<a href="https://github.com/SimpleCodeCX/myCode/tree/master/test/demo3" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/myCode/tree/master/test/demo3</a></p>
+<p>1 复制demo2的工程作为demo3</p>
+<p>2 在github上创建一个新工程demo3，并关联本地仓库</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin git@github.com:SimpleCodeCX/demo3.git</span><br></pre></td></tr></table></figure>
+<p>3 使用github账号登录travis官网，同步并激活监听github上的demo3项目</p>
+<p>参考文章：<br><a href="http://www.ruanyifeng.com/blog/2017/12/travis_ci_tutorial.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2017/12/travis_ci_tutorial.html</a></p>
+<p>4 配置travis（.travis.yml）</p>
+<p>在demo3的根目录下新建.travis.yml文件，并做如下配置：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">language: node_js</span><br><span class="line">node_js:</span><br><span class="line">  - &quot;8&quot;</span><br><span class="line">script: karma start --single-run</span><br><span class="line">before_install:</span><br><span class="line">  - npm install</span><br><span class="line">  - export CHROME_BIN=chromium-browser</span><br><span class="line">  - export DISPLAY=:99.0</span><br><span class="line">  - sh -e /etc/init.d/xvfb start</span><br></pre></td></tr></table></figure></p>
+<p>5 提交到远程仓库上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add . </span><br><span class="line">git commit -m &apos;add travis ci&apos;</span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
+<p>6 此时可以在travis上查看测试反馈<br><img src="https://upload-images.jianshu.io/upload_images/730840-c77a66fb81c78925.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="travis.jpg"></p>
+<p>有关travis的配置文档：<a href="https://docs.travis-ci.com/user/languages/javascript-with-nodejs/" target="_blank" rel="noopener">https://docs.travis-ci.com/user/languages/javascript-with-nodejs/</a></p>
+<p>参考文档：<br><a href="https://nodejs.org/api/assert.html" target="_blank" rel="noopener">https://nodejs.org/api/assert.html</a><br><a href="https://github.com/shouldjs/should.js" target="_blank" rel="noopener">https://github.com/shouldjs/should.js</a><br><a href="https://github.com/Automattic/expect.js" target="_blank" rel="noopener">https://github.com/Automattic/expect.js</a><br><a href="https://www.chaijs.com" target="_blank" rel="noopener">https://www.chaijs.com</a><br><a href="https://mochajs.org" target="_blank" rel="noopener">https://mochajs.org</a><br><a href="https://jasmine.github.io" target="_blank" rel="noopener">https://jasmine.github.io</a><br><a href="http://karma-runner.github.io" target="_blank" rel="noopener">http://karma-runner.github.io</a><br><a href="https://docs.travis-ci.com/user/languages/javascript-with-nodejs" target="_blank" rel="noopener">https://docs.travis-ci.com/user/languages/javascript-with-nodejs</a></p>
+    </div>
+  </div>
+  
+  
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/2018/11/03/基于nodejs的雪碧图制作工具/" target="_self">基于nodejs的雪碧图制作工具</a>
+      </div>
+    
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/2018/11/15/关于js（es5）如何优雅地创建对象/" target="_self">关于js（es5）如何优雅地创建对象</a>
+        <i class="iconfont icon-next"></i>
+      </div>
+    
+  </nav>
+
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz", "WaR7nrzhliHj9aVwdQzkdlGd");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
+</div>
+
+
+    <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2018, 11, 16).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+    <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+  </div>
+
+  
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+  
+
+  <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+  
+</body>
+
+</html>

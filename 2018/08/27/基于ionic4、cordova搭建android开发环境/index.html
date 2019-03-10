@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com" />
+  
+  
+
+  <title>
+    
+    基于ionic4、cordova搭建android开发环境 |
+    
+    Simple的个人博客
+  </title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta name="keywords" content="Hexo, theme-bmw" />
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n', 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+  <meta name="description" content="技术、音乐、个人博客">
+  
+
+  
+
+  
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+
+  
+  <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+  <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+<body>
+
+  
+
+  <div id="app">
+
+    <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">Simple</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a 
+              href="/"
+              target="_self"
+            >
+              首页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a 
+              href="/archives/"
+              target="_self"
+            >
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a 
+              href="/categories/"
+              target="_self"
+            >
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a 
+              href="/tags/"
+              target="_self"
+            >
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          
+            <a 
+              href="/about/"
+              target="_self"
+            >
+              关于
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/music/">
+          
+            <a 
+              href="/music/"
+              target="_self"
+            >
+              音乐
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else>其他</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a 
+                    href="https://github.com/SimpleCodeCX" 
+                    target="_blank"
+                  >
+                    Github
+                  </a>
+                </li>
+              
+                <li>
+                  <a 
+                    href="https://www.jianshu.com/u/9be5a5a0beb9" 
+                    target="_blank"
+                  >
+                    简书
+                  </a>
+                </li>
+              
+                <li>
+                  <a 
+                    href="https://juejin.im/user/5bec5067e51d451402495715" 
+                    target="_blank"
+                  >
+                    掘金
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+    
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>基于ionic4、cordova搭建android开发环境</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2018-08-27
+    </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="基于ionic4、cordova搭建android开发环境"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <h3 id="前颜（yan）"><a href="#前颜（yan）" class="headerlink" title="前颜（yan）"></a>前颜（yan）</h3><p>最近公司有一个项目需求是利用h5进行跨平台开发，这里所说的跨平台开发指的是：将h5代码利用某种方式或工具环境进行打包，最后生成android的apk以及ios的ipa。<br>本文只讲解android开发环境，等以后有空了再介绍一篇关于ios的。</p>
+<h3 id="一、知识讲解"><a href="#一、知识讲解" class="headerlink" title="一、知识讲解"></a>一、知识讲解</h3><p>本文基于ionic4+cordova构建android应用，首先做一下以下的知识梳理。</p>
+<p>1 ionic是一套用于开发混合手机应用的开源h5框架，包含一套适合于mobile application的ui组件库以及相关访问原生设备的native接口等。目前ionic已更新至ionic4，ionic4的特色在于兼容angular6以及rxjs6，有着angular6的特点，因此，angular的开发者可以很容易的切换到ionic4的开发。<br>ionic官方文档：<a href="https://beta.ionicframework.com/docs/intro" target="_blank" rel="noopener">https://beta.ionicframework.com/docs/intro</a></p>
+<p>2 cordova是一套开源的移动应用开发框架。cordova能够利用web应用（如ionic构建的h5应用）构建android工程以及ios工程（今天只讲android工程）。并且可以编译android工程，最后生成android apk。<br>cordova官方文档：<a href="https://cordova.apache.org/docs/en/latest/guide/overview/index.html" target="_blank" rel="noopener">https://cordova.apache.org/docs/en/latest/guide/overview/index.html</a></p>
+<p>3 android sdk<br>cordova在编译android工程的时候需要有android sdk等开发环境的支持。如果想对ionic和cordova更加详细的了解，请见官方文档。</p>
+<p>接下来，开始搭建开发环境。<br>因此，综上所述，需要搭建的开发环境有：ionic、cordova以及android 开发环境。</p>
+<p>我的开发环境如下（仅供参考）：<br>node：v8.11.1<br>npm：5.5.1<br>ionic：4.0.3<br>cordova：8.0.0<br>jdk：1.8.0_45<br>gradle：4.9</p>
+<h3 id="二、安装nodejs"><a href="#二、安装nodejs" class="headerlink" title="二、安装nodejs"></a>二、安装nodejs</h3><p>首先你都懂的，要装个node环境，因为Ionic和cordova的安装以及后续的许多前端工具的安装都依赖于node的包管理器npm。<br>建议安装最新版本的node。<br>没有装过的请看安装教程：<br><a href="http://www.runoob.com/nodejs/nodejs-install-setup.html" target="_blank" rel="noopener">http://www.runoob.com/nodejs/nodejs-install-setup.html</a></p>
+<h3 id="三、安装ionic"><a href="#三、安装ionic" class="headerlink" title="三、安装ionic"></a>三、安装ionic</h3><p>1 安装全局的ionic cli：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g ionic</span><br></pre></td></tr></table></figure></p>
+<p>2 检测ionic是否安装成功：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ionic -v</span><br></pre></td></tr></table></figure></p>
+<p>3 创建ionic项目<br>安装成功后，即可通过ionic cli命令创建ionic项目：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ionic start myApp tabs --type=angular</span><br></pre></td></tr></table></figure></p>
+<p>（注意：目前ionic4是beta版，需要加上 –type=angular才能创建基于angular的项目，后面等发布正式版本，估计就不需要了）</p>
+<p>说明：上面命令中tabs是ionic的其中一个模板，可以通过  <code>ionic start --list</code> 查看可选的模板。<br>比如： <code>ionic start myApp blank --type=angular</code> 可以创建空白模板的ionic项目</p>
+<p>4 下载ionic项目的node_modules包<br>   在第三步创建ionic项目的过程中，ionic cli会自动帮你下载依赖的node_modules包（可以通过package.json查看项目所依赖的包），<br>如果下载失败的话，可以删除node_modules文件夹，手动安装：<code>npm install</code></p>
+<p>5 运行ionic项目： <code>ionic serve</code><br>ionic项目本身就是一个web h5项目，因此可以像vue、angular一样运行于浏览器。<br>好了，ionic项目搭建成功后，接下来搭建cordova环境，然后利用cordova把ionic项目构建android工程。</p>
+<h3 id="四、安装cordova"><a href="#四、安装cordova" class="headerlink" title="四、安装cordova"></a>四、安装cordova</h3><p>1  安装全局的cordova：<br><code>npm install -g cordova</code></p>
+<p>2 检测cordova是否安装成功：<br><code>cordova -v</code></p>
+<p>3 构建android工程<br>1） 查看支持的平台以及版本：<code>ionic cordova platform ls</code><br>2） 构建android platform：<code>ionic cordova platform add android</code></p>
+<p>说明：此步骤会修改ionic的目录结构，让ionic支持cordova。构建成功后，会在platforms目录下生成一个android工程。</p>
+<p>其他cordova命令：<br>移除android工程：<code>ionic cordova platform remove android</code><br>添加指定版本的android工程：<code>ionic cordova platform add android@6.0.0</code></p>
+<p>至此，cordova环境已经搭建完成，并且利用ionic生成了一个android工程（位于/platforms/android）。<br>但是此时还不能通过cordova编译该android工程，因为cordova编译android工程需要有android sdk的开发环境。所以，接下来配置android sdk环境。</p>
+<h3 id="五、配置android-sdk环境"><a href="#五、配置android-sdk环境" class="headerlink" title="五、配置android sdk环境"></a>五、配置android sdk环境</h3><p>1 安装jdk（下载、解压、配置环境变量）<br>安装jdk可以参考这篇文章的jdk章节：<br><a href="https://blog.csdn.net/love4399/article/details/77164500" target="_blank" rel="noopener">https://blog.csdn.net/love4399/article/details/77164500</a><br>用cmd 运行 javac -version 检查是否安装成功</p>
+<p>2 安装android-sdk（下载、解压、配置环境变量）<br>安装android-sdk可以参考这篇文章的android-sdk章节：<br><a href="https://blog.csdn.net/love4399/article/details/77164500" target="_blank" rel="noopener">https://blog.csdn.net/love4399/article/details/77164500</a><br>用cmd 运行 adb –version 检查是否安装成功</p>
+<p>3 安装gradle（下载、解压、配置环境变量）<br>安装安装gradle可以参考这篇文章：<br><a href="https://jingyan.baidu.com/article/00a07f38706f0b82d028dcf3.html" target="_blank" rel="noopener">https://jingyan.baidu.com/article/00a07f38706f0b82d028dcf3.html</a><br>用cmd 运行 gradle -v 检查是否安装成功</p>
+<p>以上环境搭建成功之后，即可通过cordova命令进行编译：<code>ionic cordova build android</code>，编译成功之后，会在/myApp/platforms/android/app/build/outputs/apk/debug目录下生成一个 xxx.apk。</p>
+<h3 id="六、构建第一个android应用"><a href="#六、构建第一个android应用" class="headerlink" title="六、构建第一个android应用"></a>六、构建第一个android应用</h3><p>至此，一个android apk就生成啦。<br>最后总结一下利用ionic4+cordova构建android应用的过程：<br>1 ionic start myApp blank–type=angular （创建ionic项目）<br>2 ionic cordova platform add android    （添加android平台）<br>3 ionic cordova build android           （编译生成apk）<br>是不是很简单，前提是以上环境都已经搭建好了。</p>
+<p>参考文档：<br>1）cordova：<a href="https://baike.baidu.com/item/Cordova/9192368?fr=aladdin" target="_blank" rel="noopener">https://baike.baidu.com/item/Cordova/9192368?fr=aladdin</a><br>2）ionic：<a href="https://baike.baidu.com/item/ionic/1326386?fr=aladdin" target="_blank" rel="noopener">https://baike.baidu.com/item/ionic/1326386?fr=aladdin</a><br>3）<a href="https://www.cnblogs.com/qypx520/p/6022787.html" target="_blank" rel="noopener">ionic开发android app步骤</a><br>4）2017年Android SDK下载安装及配置教程：<a href="https://blog.csdn.net/love4399/article/details/77164500" target="_blank" rel="noopener">https://blog.csdn.net/love4399/article/details/77164500</a></p>
+
+    </div>
+  </div>
+  
+  
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/2018/07/22/koa2实现文件上传/" target="_self">koa2实现文件上传</a>
+      </div>
+    
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/2018/09/23/Diffie-Hellman密钥协商算法/" target="_self">Diffie-Hellman密钥协商算法</a>
+        <i class="iconfont icon-next"></i>
+      </div>
+    
+  </nav>
+
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz", "WaR7nrzhliHj9aVwdQzkdlGd");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
+</div>
+
+
+    <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2018, 11, 16).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+    <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+  </div>
+
+  
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+  
+
+  <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+  
+</body>
+
+</html>
