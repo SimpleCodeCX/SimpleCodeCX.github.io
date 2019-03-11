@@ -200,8 +200,8 @@
   
   <div class="post">
     <h1 class="article-title">
-      <a href="/blog/20190311/9daba997.html">
-        <span>测试</span>
+      <a href="/blog/20190311/f1f1f195.html">
+        <span>webpack4实践笔记18 webpack-dev-server (开发模式)</span>
       </a>
     </h1>
     <!-- PC端文章信息 -->
@@ -216,56 +216,6 @@
         发布 : 2019-03-11
       </span>
       
-      
-        <span>
-          浏览 : <span class="article-timer" data-identity="9daba997.html"></span>
-        </span>
-      
-    </div>
-    
-    <!-- 文章简介 -->
-    <div class="article-content">
-      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
-        
-      </div>
-    </div>
-    <div class="article-footer">
-      <div class="article-meta pull-left">
-        <!-- 分类pc端可见 -->
-        <span class="pc-view">
-          
-        <span>
-                    
-        </span>
-      </div>
-      
-        <div class="article-meta pull-right">
-          <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="9daba997.html"></span>
-          </span>
-        </div>
-      
-    </div>
-  </div>
-  
-  <div class="post">
-    <h1 class="article-title">
-      <a href="/blog/20190224/e9584fe7.html">
-        <span>webpack4 系列实践笔记(7): 关于SplitChunksPlugin代码分离</span>
-      </a>
-    </h1>
-    <!-- PC端文章信息 -->
-    <div class="article-top-meta pc-view">
-      <span>
-        发布时间 : 2019-02-24
-      </span>
-    </div>
-    <!-- 移动端文章信息 -->
-    <div class="article-top-meta mobile-view">
-      <span>
-        发布 : 2019-02-24
-      </span>
-      
         <span>
         分类 :
           <a href="/categories/webpack/">
@@ -275,7 +225,7 @@
       
       
         <span>
-          浏览 : <span class="article-timer" data-identity="e9584fe7.html"></span>
+          浏览 : <span class="article-timer" data-identity="f1f1f195.html"></span>
         </span>
       
     </div>
@@ -284,7 +234,7 @@
     <div class="article-content">
       <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
         <blockquote>
-<p>从webpack4开始，用SplitChunksPlugin插件替换了CommonsChunkPlugin插件。<br>相对于CommonsChunkPlugin，SplitChunksPlugin的使用更加方便和清晰。<br>
+<p>development 模式:<br>在开发环境中，我们希望能够更加方便的进行开发以及调试代码，当项目运行起来后，可以自动打开浏览器，webpack 能够通过监听代码的修改，自动重新编译打包，并且实时刷新浏览器。<br>production 模式:<br>在生产模式中，我们希望能够得到一个更小的 bundle，更轻量的 source &gt;map，从而改善加载时间。<br>如果没有设置 <code>mode</code> ，webpack 默认以 <code>production</code> 模式进行打包。<br>
       </div>
     </div>
     <div class="article-footer">
@@ -314,7 +264,7 @@
       
         <div class="article-meta pull-right">
           <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="e9584fe7.html"></span>
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="f1f1f195.html"></span>
           </span>
         </div>
       
@@ -323,20 +273,20 @@
   
   <div class="post">
     <h1 class="article-title">
-      <a href="/blog/20190224/4af33ce3.html">
-        <span>webpack4 系列实践笔记(6): webpack + babel7 + typescript</span>
+      <a href="/blog/20190311/8515384d.html">
+        <span>webpack4实践笔记17 clean-webpack-plugin (清除模式)</span>
       </a>
     </h1>
     <!-- PC端文章信息 -->
     <div class="article-top-meta pc-view">
       <span>
-        发布时间 : 2019-02-24
+        发布时间 : 2019-03-11
       </span>
     </div>
     <!-- 移动端文章信息 -->
     <div class="article-top-meta mobile-view">
       <span>
-        发布 : 2019-02-24
+        发布 : 2019-03-11
       </span>
       
         <span>
@@ -348,7 +298,7 @@
       
       
         <span>
-          浏览 : <span class="article-timer" data-identity="4af33ce3.html"></span>
+          浏览 : <span class="article-timer" data-identity="8515384d.html"></span>
         </span>
       
     </div>
@@ -357,7 +307,7 @@
     <div class="article-content">
       <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
         <blockquote>
-<p>本demo06演示webpack打包babel和typescript，关于babel和typescript的webpack单独打包例&gt;子，请看我之前的demo05和demo06<br>
+<p>在之前的 demo 中，webpack 打包后会在根目录下自动创建 dist 目录，并且把生成的文件输出到 dist 下。<br>当配置的输出包名含有 <code>[hash]</code> 时，hash值会随着文件内容的改变而改变。<br>因此，我们需要在下一次 webpack 打包输出之前，把 dist 目录清空。<br>clean-webpack-plugin 插件就能帮你做到。<br>
       </div>
     </div>
     <div class="article-footer">
@@ -387,7 +337,7 @@
       
         <div class="article-meta pull-right">
           <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="4af33ce3.html"></span>
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="8515384d.html"></span>
           </span>
         </div>
       
@@ -396,20 +346,20 @@
   
   <div class="post">
     <h1 class="article-title">
-      <a href="/blog/20190224/808417d9.html">
-        <span>webpack4 系列实践笔记(5): webpack + typescript</span>
+      <a href="/blog/20190311/7be060d8.html">
+        <span>webpack4实践笔记16 webpack 处理字体</span>
       </a>
     </h1>
     <!-- PC端文章信息 -->
     <div class="article-top-meta pc-view">
       <span>
-        发布时间 : 2019-02-24
+        发布时间 : 2019-03-11
       </span>
     </div>
     <!-- 移动端文章信息 -->
     <div class="article-top-meta mobile-view">
       <span>
-        发布 : 2019-02-24
+        发布 : 2019-03-11
       </span>
       
         <span>
@@ -421,7 +371,7 @@
       
       
         <span>
-          浏览 : <span class="article-timer" data-identity="808417d9.html"></span>
+          浏览 : <span class="article-timer" data-identity="7be060d8.html"></span>
         </span>
       
     </div>
@@ -430,7 +380,7 @@
     <div class="article-content">
       <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
         <blockquote>
-<p>typescript（简称ts）是javascript的超集，具有类型系统，是可编译的。可以想象得到，在代<br>码运行之前能够进行代码类型检查和编译是多么重要的事儿（就像Java等强类型语言一样）。<br>
+<p>通过 url-loader 和 file-loader 配合可以实现：<br>当字体大小 &lt; 某个限定值（limit）时，转换为 base64 字符传，并打包进 bundle 中。<br>当字体大小 &gt; 某个限定值时，将图片放到指定目录下，并通过 url 引用。<br>
       </div>
     </div>
     <div class="article-footer">
@@ -460,7 +410,7 @@
       
         <div class="article-meta pull-right">
           <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="808417d9.html"></span>
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="7be060d8.html"></span>
           </span>
         </div>
       
@@ -469,20 +419,20 @@
   
   <div class="post">
     <h1 class="article-title">
-      <a href="/blog/20190224/b77e298c.html">
-        <span>webpack4 系列实践笔记(4): webpack + babel7</span>
+      <a href="/blog/20190311/1275f9d9.html">
+        <span>webpack4实践笔记15 webpack 处理图片</span>
       </a>
     </h1>
     <!-- PC端文章信息 -->
     <div class="article-top-meta pc-view">
       <span>
-        发布时间 : 2019-02-24
+        发布时间 : 2019-03-11
       </span>
     </div>
     <!-- 移动端文章信息 -->
     <div class="article-top-meta mobile-view">
       <span>
-        发布 : 2019-02-24
+        发布 : 2019-03-11
       </span>
       
         <span>
@@ -494,7 +444,7 @@
       
       
         <span>
-          浏览 : <span class="article-timer" data-identity="b77e298c.html"></span>
+          浏览 : <span class="article-timer" data-identity="1275f9d9.html"></span>
         </span>
       
     </div>
@@ -503,7 +453,7 @@
     <div class="article-content">
       <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
         <blockquote>
-<p>babel 7 于2018年8月份发布，在babel 7中，所有官方包更名为以@babel为开头,并且babel 7推<br>荐使用babel.config.js来配置babel<br>
+<p>通过 url-loader 和 file-loader 配合可以实现：<br>当图片大小 &lt; 某个限定值（limit）时，转换为 base64 字符传，并打包进 bundle 中。<br>当图片大小 &gt; 某个限定值时，将图片放到指定目录下，并通过 url 引用。<br>
       </div>
     </div>
     <div class="article-footer">
@@ -533,7 +483,7 @@
       
         <div class="article-meta pull-right">
           <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="b77e298c.html"></span>
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="1275f9d9.html"></span>
           </span>
         </div>
       
@@ -542,20 +492,20 @@
   
   <div class="post">
     <h1 class="article-title">
-      <a href="/blog/20190224/a9943a25.html">
-        <span>webpack4 系列实践笔记(3): webpack默认支持各种模块化规范</span>
+      <a href="/blog/20190311/b166f567.html">
+        <span>webpack4实践笔记14 mini-css-extract-plugin + SplitChunksPlugin 处理 css 和 scss</span>
       </a>
     </h1>
     <!-- PC端文章信息 -->
     <div class="article-top-meta pc-view">
       <span>
-        发布时间 : 2019-02-24
+        发布时间 : 2019-03-11
       </span>
     </div>
     <!-- 移动端文章信息 -->
     <div class="article-top-meta mobile-view">
       <span>
-        发布 : 2019-02-24
+        发布 : 2019-03-11
       </span>
       
         <span>
@@ -567,7 +517,7 @@
       
       
         <span>
-          浏览 : <span class="article-timer" data-identity="a9943a25.html"></span>
+          浏览 : <span class="article-timer" data-identity="b166f567.html"></span>
         </span>
       
     </div>
@@ -576,7 +526,7 @@
     <div class="article-content">
       <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
         <blockquote>
-<p>webpack默认支持<code>es6</code>,<code>Commonjs</code>,<code>AMD</code>,<code>umd</code>规范,<br>详见webpack模块文档: <a href="https://www.webpackjs.com/concepts/modules/" target="_blank" rel="noopener">https://www.webpackjs.com/concepts/modules/</a><br>
+<p>虽然webpack4不支持 <code>ExtractTextWebpackPlugin</code> 插件，但是我们可以使用 <code>mini-css-extract-plugin</code> 来实现把 css 提取为单独的文件。<br>
       </div>
     </div>
     <div class="article-footer">
@@ -606,7 +556,7 @@
       
         <div class="article-meta pull-right">
           <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="a9943a25.html"></span>
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="b166f567.html"></span>
           </span>
         </div>
       
@@ -615,20 +565,20 @@
   
   <div class="post">
     <h1 class="article-title">
-      <a href="/blog/20190224/9f220a6b.html">
-        <span>webpack4 系列实践笔记(2): 使用webpack.config.js配置文件</span>
+      <a href="/blog/20190311/41443a76.html">
+        <span>webpack4实践笔记13 webpack通过postcss-loader加工css和scss</span>
       </a>
     </h1>
     <!-- PC端文章信息 -->
     <div class="article-top-meta pc-view">
       <span>
-        发布时间 : 2019-02-24
+        发布时间 : 2019-03-11
       </span>
     </div>
     <!-- 移动端文章信息 -->
     <div class="article-top-meta mobile-view">
       <span>
-        发布 : 2019-02-24
+        发布 : 2019-03-11
       </span>
       
         <span>
@@ -640,7 +590,7 @@
       
       
         <span>
-          浏览 : <span class="article-timer" data-identity="9f220a6b.html"></span>
+          浏览 : <span class="article-timer" data-identity="41443a76.html"></span>
         </span>
       
     </div>
@@ -649,7 +599,7 @@
     <div class="article-content">
       <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
         <blockquote>
-<p>webpack是高度可配置的。webpack.config.js是webpack默认的配置文件名，当直接运行webpack，webpack默认根据webpack.config.js进行打包。<br>
+<p>postcss: postcss 有一个插件体系，postcss 可以通过选择相应的插件对 css 进行转换和处理。<br>比如可以通过 Autoprefixer 插件来处理 css 的前缀，以实现浏览器的兼容性。<br>postcss-loader: webpack 通过 postcss-loader 来调用 postcss。<br>
       </div>
     </div>
     <div class="article-footer">
@@ -679,7 +629,7 @@
       
         <div class="article-meta pull-right">
           <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="9f220a6b.html"></span>
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="41443a76.html"></span>
           </span>
         </div>
       
@@ -688,20 +638,20 @@
   
   <div class="post">
     <h1 class="article-title">
-      <a href="/blog/20190224/f0110ca0.html">
-        <span>webpack4 系列实践笔记(1): 最简单的webpack实例</span>
+      <a href="/blog/20190311/5bb783a3.html">
+        <span>webpack4实践笔记12 webpack 处理 scss</span>
       </a>
     </h1>
     <!-- PC端文章信息 -->
     <div class="article-top-meta pc-view">
       <span>
-        发布时间 : 2019-02-24
+        发布时间 : 2019-03-11
       </span>
     </div>
     <!-- 移动端文章信息 -->
     <div class="article-top-meta mobile-view">
       <span>
-        发布 : 2019-02-24
+        发布 : 2019-03-11
       </span>
       
         <span>
@@ -713,7 +663,7 @@
       
       
         <span>
-          浏览 : <span class="article-timer" data-identity="f0110ca0.html"></span>
+          浏览 : <span class="article-timer" data-identity="5bb783a3.html"></span>
         </span>
       
     </div>
@@ -722,7 +672,7 @@
     <div class="article-content">
       <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
         <blockquote>
-<p>webpack支持零配置打包(无需webpack.config.js配置文件)，我们可以直接运行<code>webpack xxxx.js</code>体验一下<br>
+<p>webpack 处理 scss<br>
       </div>
     </div>
     <div class="article-footer">
@@ -752,7 +702,7 @@
       
         <div class="article-meta pull-right">
           <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="f0110ca0.html"></span>
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="5bb783a3.html"></span>
           </span>
         </div>
       
@@ -761,32 +711,32 @@
   
   <div class="post">
     <h1 class="article-title">
-      <a href="/blog/20181223/e2c87752.html">
-        <span>@angular前端项目代码优化：构建Api Tree</span>
+      <a href="/blog/20190311/28ba9e99.html">
+        <span>webpack4实践笔记11 webpack处理css</span>
       </a>
     </h1>
     <!-- PC端文章信息 -->
     <div class="article-top-meta pc-view">
       <span>
-        发布时间 : 2018-12-23
+        发布时间 : 2019-03-11
       </span>
     </div>
     <!-- 移动端文章信息 -->
     <div class="article-top-meta mobile-view">
       <span>
-        发布 : 2018-12-23
+        发布 : 2019-03-11
       </span>
       
         <span>
         分类 :
-          <a href="/categories/angular/">
-            angular
+          <a href="/categories/webpack/">
+            webpack
           </a>
         </span>
       
       
         <span>
-          浏览 : <span class="article-timer" data-identity="e2c87752.html"></span>
+          浏览 : <span class="article-timer" data-identity="28ba9e99.html"></span>
         </span>
       
     </div>
@@ -795,7 +745,7 @@
     <div class="article-content">
       <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
         <blockquote>
-<p>在前端项目的开发过程中，往往后端会给到一份数据接口（本文简称api），为了减少后期的维护以及出错成本，我的考虑是希望能够找到这么一种方法，可以将所有的api以某种方式统一的管理起来，并且很方便的进行维护，比如当后端修改了api名，我可以很快的定位到该api进行修改，或者当后端添加了新的api，我可以很快的知道具体是一个api写漏了。<br>于是，我有了构建Api Tree的想法。<br>
+<p>在 webpack 中，所有类型的文件都是模块，比如 js、css、图片、字体、json（可以说是万物皆模块）。<br>但是，在普通的 js 代码中，我们直接 import (或require) 一张图片或css是会报错的。<br>但在 webpack 构建的项目中，归功于 loader（加载器），webpack 能够把 js 的模块化推广至其他类型文件，比如：<code>import(&#39;xxx.css&#39;);</code><br>
       </div>
     </div>
     <div class="article-footer">
@@ -804,8 +754,8 @@
         <span class="pc-view">
           
             <i class="iconfont icon-tag"></i>分类:
-            <a href="/categories/angular/">
-              angular
+            <a href="/categories/webpack/">
+              webpack
             </a>
           </span>
           
@@ -814,8 +764,8 @@
             <i class="iconfont icon-06tags"></i>标签:
             
               <span class="span--tag">
-                <a href="/tags/前端/">
-                  #前端
+                <a href="/tags/前端构建工具/">
+                  #前端构建工具
                 </a>
               </span>
             
@@ -825,7 +775,7 @@
       
         <div class="article-meta pull-right">
           <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="e2c87752.html"></span>
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="28ba9e99.html"></span>
           </span>
         </div>
       
@@ -834,32 +784,32 @@
   
   <div class="post">
     <h1 class="article-title">
-      <a href="/blog/20181216/a2214845.html">
-        <span>关于依赖注入(typescript)</span>
+      <a href="/blog/20190311/87d97ce2.html">
+        <span>webpack4实践笔记10 关于JS Tree Shaking</span>
       </a>
     </h1>
     <!-- PC端文章信息 -->
     <div class="article-top-meta pc-view">
       <span>
-        发布时间 : 2018-12-16
+        发布时间 : 2019-03-11
       </span>
     </div>
     <!-- 移动端文章信息 -->
     <div class="article-top-meta mobile-view">
       <span>
-        发布 : 2018-12-16
+        发布 : 2019-03-11
       </span>
       
         <span>
         分类 :
-          <a href="/categories/angular/">
-            angular
+          <a href="/categories/webpack/">
+            webpack
           </a>
         </span>
       
       
         <span>
-          浏览 : <span class="article-timer" data-identity="a2214845.html"></span>
+          浏览 : <span class="article-timer" data-identity="87d97ce2.html"></span>
         </span>
       
     </div>
@@ -868,7 +818,7 @@
     <div class="article-content">
       <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
         <blockquote>
-<p>依赖注入（DI）和控制反转（IOC）基本是一个意思，因为说起来谁都离不开谁。<br>简单来说，类A依赖类B，但A不控制B的创建和销毁，仅使用B，那么B的控制权则交给A之外处理，这叫控制反转（IOC）。<br>
+<p>借助于 es6 (es2015) 模块系统 (import 和 export) 的静态解析，webpack 能够利用 Tree Shaking 进行按需加载，移除掉没有被引用的模块，从而减少包的大小，缩小应用的加载时间，从而提高性能体验。<br>
       </div>
     </div>
     <div class="article-footer">
@@ -877,8 +827,8 @@
         <span class="pc-view">
           
             <i class="iconfont icon-tag"></i>分类:
-            <a href="/categories/angular/">
-              angular
+            <a href="/categories/webpack/">
+              webpack
             </a>
           </span>
           
@@ -887,8 +837,8 @@
             <i class="iconfont icon-06tags"></i>标签:
             
               <span class="span--tag">
-                <a href="/tags/前端/">
-                  #前端
+                <a href="/tags/前端构建工具/">
+                  #前端构建工具
                 </a>
               </span>
             
@@ -898,7 +848,80 @@
       
         <div class="article-meta pull-right">
           <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="a2214845.html"></span>
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="87d97ce2.html"></span>
+          </span>
+        </div>
+      
+    </div>
+  </div>
+  
+  <div class="post">
+    <h1 class="article-title">
+      <a href="/blog/20190311/ecf0b61.html">
+        <span>webpack4实践笔记9 使用 SplitChunksPlugin 分离第三方依赖包以及异步包</span>
+      </a>
+    </h1>
+    <!-- PC端文章信息 -->
+    <div class="article-top-meta pc-view">
+      <span>
+        发布时间 : 2019-03-11
+      </span>
+    </div>
+    <!-- 移动端文章信息 -->
+    <div class="article-top-meta mobile-view">
+      <span>
+        发布 : 2019-03-11
+      </span>
+      
+        <span>
+        分类 :
+          <a href="/categories/webpack/">
+            webpack
+          </a>
+        </span>
+      
+      
+        <span>
+          浏览 : <span class="article-timer" data-identity="ecf0b61.html"></span>
+        </span>
+      
+    </div>
+    
+    <!-- 文章简介 -->
+    <div class="article-content">
+      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
+        <blockquote>
+<p>在单页面或多页面应用中，通过代码分离的方式，能够优化性能。<br>比如把异步加载的代码分离成一个单独的chunk，等到需要调用的时候再按需加载（比如click时），这样可以减少首屏的代码体积，从而提高首屏的加载速度。<br>
+      </div>
+    </div>
+    <div class="article-footer">
+      <div class="article-meta pull-left">
+        <!-- 分类pc端可见 -->
+        <span class="pc-view">
+          
+            <i class="iconfont icon-tag"></i>分类:
+            <a href="/categories/webpack/">
+              webpack
+            </a>
+          </span>
+          
+        <span>
+          
+            <i class="iconfont icon-06tags"></i>标签:
+            
+              <span class="span--tag">
+                <a href="/tags/前端构建工具/">
+                  #前端构建工具
+                </a>
+              </span>
+            
+                    
+        </span>
+      </div>
+      
+        <div class="article-meta pull-right">
+          <span class="pc-view">
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="ecf0b61.html"></span>
           </span>
         </div>
       

@@ -9,7 +9,7 @@
 
   <title>
     
-    webpack4 系列实践笔记(1): 最简单的webpack实例 |
+    webpack4 系列实践笔记(1): 最简单的 webpack 零配置 |
     
     Simple的个人博客
   </title>
@@ -212,7 +212,7 @@
 
 <div class="post">
   <h1 class="article-title">
-    <span>webpack4 系列实践笔记(1): 最简单的webpack实例</span>
+    <span>webpack4 系列实践笔记(1): 最简单的 webpack 零配置</span>
   </h1>
   <div class="article-top-meta">
     <span>
@@ -240,14 +240,49 @@
     <div class="markdown-body">
       </p>
 </blockquote>
-<h3 id="1-零配置webpack"><a href="#1-零配置webpack" class="headerlink" title="1.零配置webpack"></a>1.零配置webpack</h3><p>webpack支持零配置打包(无需webpack.config.js配置文件)，我们可以直接运行<code>webpack xxxx.js</code>体验一下</p>
-<h3 id="2-目录结构"><a href="#2-目录结构" class="headerlink" title="2.目录结构"></a>2.目录结构</h3><p>在demo01目录下新建 hello.js 和 index.js</p>
+<h3 id="1-零配置-webpack"><a href="#1-零配置-webpack" class="headerlink" title="1.零配置 webpack"></a>1.零配置 webpack</h3><p>webpack4 支持零配置打包(无需 webpack.config.js 配置文件)，首先我们可以直接运行 <code>webpack index.js</code>（入口index.js）进行编译打包。</p>
+<h3 id="2-目录结构"><a href="#2-目录结构" class="headerlink" title="2.目录结构"></a>2.目录结构</h3><p>在 demo01 目录下新建 hello.js 和 index.js</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// `--` 代表目录， `-` 代表文件</span></span><br><span class="line">--demo01</span><br><span class="line">  --src</span><br><span class="line">    -hello.js</span><br><span class="line">    -index.js</span><br></pre></td></tr></table></figure>
 <p>hello.js<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">export function sayHello() &#123;</span><br><span class="line">  console.log(&apos;hello world!&apos;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>index.js<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import &#123; sayHello &#125; from &apos;./hello&apos;;</span><br><span class="line">sayHello();</span><br></pre></td></tr></table></figure></p>
-<h3 id="3-执行打包命令：webpack"><a href="#3-执行打包命令：webpack" class="headerlink" title="3.执行打包命令：webpack"></a>3.执行打包命令：webpack</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">webpack index.js</span><br></pre></td></tr></table></figure>
-<p>打包成功后，会在demo01目录下生成dist/main.js</p>
+<h3 id="3-执行打包命令：webpack"><a href="#3-执行打包命令：webpack" class="headerlink" title="3.执行打包命令：webpack"></a>3.执行打包命令：webpack</h3><blockquote>
+<p>(默认你已经安装了全局 webpack 以及 webpack-cli )</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">webpack ./src/index.js</span><br></pre></td></tr></table></figure>
+<p>打包成功后，会在 demo01 目录下生成 dist/main.js</p>
 <h3 id="4-验证打包结果"><a href="#4-验证打包结果" class="headerlink" title="4.验证打包结果"></a>4.验证打包结果</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node dist/main.js</span><br></pre></td></tr></table></figure>
 <p>结果输出：hello world!</p>
+<h3 id="5-总结"><a href="#5-总结" class="headerlink" title="5.总结"></a>5.总结</h3><ul>
+<li><p>想了解更多 webpack 的命令?</p>
+<blockquote>
+<p>通过执行 webpack –help 查看 webpack 的参数选项。</p>
+</blockquote>
+</li>
+<li><p>打包后为什么是 main.js?</p>
+<blockquote>
+<p>当没有指定 webpack 的输出文件名时，webpack默认以 main 作为包名。</p>
+</blockquote>
+<blockquote>
+<p>试试这个: webpack ./src/index.js –output ./dist/[name]-[hash].js</p>
+</blockquote>
+</li>
+<li><p>为什么 main.js 代码那么复杂?</p>
+<blockquote>
+<p>webpack 打包会生成一份 runtime 和 manifest 来管理所有模块的交互，而这份代码也被打包进 main.js 中了。</p>
+</blockquote>
+<blockquote>
+<p>关于 runtime 和 manifest: <a href="https://webpack.docschina.org/concepts/manifest/" target="_blank" rel="noopener">https://webpack.docschina.org/concepts/manifest/</a></p>
+</blockquote>
+</li>
+<li><p>代码被压缩?</p>
+<blockquote>
+<p>在没有指定 webpack 的打包模式时，webpack 默认使用 production 模式进行打包，因此会对代码进行压缩。</p>
+</blockquote>
+<blockquote>
+<p>试试这个: webpack ./src/index.js –mode development</p>
+</blockquote>
+</li>
+</ul>
     </div>
   </div>
   
