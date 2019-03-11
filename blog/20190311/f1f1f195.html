@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com" />
+  
+  
+
+  <title>
+    
+    webpack4实践笔记18 webpack-dev-server (开发模式) |
+    
+    Simple的个人博客
+  </title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta name="keywords" content="webpack,前端构建工具," />
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n', 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+  <meta name="description" content="技术、音乐、个人博客">
+  
+
+  
+
+  
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+
+  
+  <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+  <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+<body>
+
+  
+
+  <div id="app">
+
+    <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">Simple</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a 
+              href="/"
+              target="_self"
+            >
+              首页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a 
+              href="/archives/"
+              target="_self"
+            >
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a 
+              href="/categories/"
+              target="_self"
+            >
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a 
+              href="/tags/"
+              target="_self"
+            >
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else>其他</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a 
+                    href="https://github.com/SimpleCodeCX" 
+                    target="_blank"
+                  >
+                    Github
+                  </a>
+                </li>
+              
+                <li>
+                  <a 
+                    href="https://www.jianshu.com/u/9be5a5a0beb9" 
+                    target="_blank"
+                  >
+                    简书
+                  </a>
+                </li>
+              
+                <li>
+                  <a 
+                    href="https://juejin.im/user/5bec5067e51d451402495715" 
+                    target="_blank"
+                  >
+                    掘金
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+    
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>webpack4实践笔记18 webpack-dev-server (开发模式)</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2019-03-11
+    </span>
+    
+      <span>
+        分类 : 
+          <a href="/categories/webpack/">
+            webpack
+          </a>
+      </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="f1f1f195.html"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      </p>
+</blockquote>
+<h3 id="1-development-vs-production"><a href="#1-development-vs-production" class="headerlink" title="1.development vs production"></a>1.development vs production</h3><p>development 模式:</p>
+<blockquote>
+<p>在开发环境中，我们希望能够更加方便的进行开发以及调试代码，当项目运行起来后，可以自动打开浏览器，webpack 能够通过监听代码的修改，自动重新编译打包，并且实时刷新浏览器。</p>
+</blockquote>
+<p>production 模式:</p>
+<blockquote>
+<p>在生产模式中，我们希望能够得到一个更小的 bundle，更轻量的 source &gt;map，从而改善加载时间。</p>
+</blockquote>
+<p>如果没有设置 <code>mode</code> ，webpack 默认以 <code>production</code> 模式进行打包。</p>
+<h3 id="2-webpack-dev-server"><a href="#2-webpack-dev-server" class="headerlink" title="2.webpack-dev-server"></a>2.webpack-dev-server</h3><p>webpack-dev-server 是 webpack 官方提供的一个小型 Express 服务器。<br>通过配置它可以在开发模式下为 webpack 打包生成的静态资源文件启动一个 web 服务器，并检测代码的变化进行实时更新。</p>
+<blockquote>
+<p>注意：webpack-dev-server只能工作于 <code>development</code> 模式。</p>
+</blockquote>
+<p>webpack4提供了一个 <code>devServer</code> 的选项，来配置 <code>webpack-dev-server</code>。</p>
+<p>devServer 的配置项挺多的，详见文档：<a href="https://www.webpackjs.com/configuration/dev-server/" target="_blank" rel="noopener">https://www.webpackjs.com/configuration/dev-server/</a></p>
+<ul>
+<li>contentBase: 设置静态资源的路径，默认是当前工作目录。</li>
+<li>hot: 设置热更新功能，实现不刷新浏览器就能对修改到的模块进行热更新。</li>
+<li>open： devServer 自动打开浏览器</li>
+<li><p>overlay: 配置当 webpack 编译警告或出错时，是否在浏览器显示</p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">overlay: <span class="literal">true</span> <span class="comment">// 显示错误</span></span><br><span class="line">或</span><br><span class="line">overlay: &#123;</span><br><span class="line">  warnings: <span class="literal">true</span>, <span class="comment">// 显示警告</span></span><br><span class="line">  errors: <span class="literal">true</span> <span class="comment">// 显示错误</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>port: 指定要监听请求的端口号</li>
+<li><p>proxy: devServer 是一个基于 express 的后端服务，在后端中是没有跨域的限制的（因为跨域是浏览器的行为），因此，通过这个代理，浏览器就不会出现跨域的问题了。比如通过如下配置把 /api 代理到 <a href="http://xxx.xxx.xxx.xxx/api" target="_blank" rel="noopener">http://xxx.xxx.xxx.xxx/api</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">proxy: &#123;</span><br><span class="line">  &quot;/api&quot;: &quot;http://xxx.xxx.xxx.xxx/api&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>historyApiFallback: 当使用 HTML5 History API 时，默认情况下任意的 404 响应都被替换为 index.html。</p>
+<pre><code>可以通过如下修改配置
+</code></pre><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">historyApiFallback: &#123;</span><br><span class="line">  rewrites: [</span><br><span class="line">    &#123; <span class="attr">from</span>: <span class="regexp">/^\/$/</span>, <span class="attr">to</span>: <span class="string">'/views/landing.html'</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">from</span>: <span class="regexp">/^\/subpage/</span>, <span class="attr">to</span>: <span class="string">'/views/subpage.html'</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">from</span>: <span class="regexp">/./</span>, <span class="attr">to</span>: <span class="string">'/views/404.html'</span> &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-安装相关依赖"><a href="#3-安装相关依赖" class="headerlink" title="3.安装相关依赖"></a>3.安装相关依赖</h3><blockquote>
+<p>注意: webpack-dev-server 依赖于 webpack 和 webpack-cli，所以需要在本地安装 webpack 和 webpack-cli。</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">npm install -D webpack-dev-server</span><br><span class="line">npm install -D webpack webpack-cli</span><br><span class="line">npm install -D css-loader url-loader file-loader </span><br><span class="line">npm install -D mini-css-extract-plugin </span><br><span class="line">npm install -D html-webpack-plugin clean-webpack-plugin</span><br></pre></td></tr></table></figure>
+<h3 id="4-目录结构"><a href="#4-目录结构" class="headerlink" title="4.目录结构"></a>4.目录结构</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// `--` 代表目录， `-` 代表文件</span></span><br><span class="line">  --demo14 font</span><br><span class="line">    --src</span><br><span class="line">      --assets</span><br><span class="line">        --fonts</span><br><span class="line">          -icomoon.css</span><br><span class="line">          -icomoon.eot <span class="comment">//3KB</span></span><br><span class="line">          -icomoon.svg <span class="comment">//5KB</span></span><br><span class="line">          -icomoon.ttf <span class="comment">//3KB</span></span><br><span class="line">          -icomoon.woff <span class="comment">//3KB</span></span><br><span class="line">        --styles</span><br><span class="line">          -app.css</span><br><span class="line">      -app.js</span><br><span class="line">    -index.html</span><br><span class="line">    -webpack.config.js</span><br></pre></td></tr></table></figure>
+<p>src/assets/fonts/icomoon.css<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">@font-face &#123;</span><br><span class="line">  font-family: <span class="string">"icomoon"</span>;</span><br><span class="line">  src: url(<span class="string">"./icomoon.eot?nn7hff"</span>);</span><br><span class="line">  src: url(<span class="string">"./icomoon.eot?nn7hff#iefix"</span>) format(<span class="string">"embedded-opentype"</span>),</span><br><span class="line">    url(<span class="string">"./icomoon.ttf?nn7hff"</span>) format(<span class="string">"truetype"</span>),</span><br><span class="line">    url(<span class="string">"./icomoon.woff?nn7hff"</span>) format(<span class="string">"woff"</span>),</span><br><span class="line">    url(<span class="string">"./icomoon.svg?nn7hff#icomoon"</span>) format(<span class="string">"svg"</span>);</span><br><span class="line">  font-weight: normal;</span><br><span class="line">  font-style: normal;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[<span class="class"><span class="keyword">class</span>^</span>=<span class="string">"icon-"</span>],</span><br><span class="line">[<span class="class"><span class="keyword">class</span>*</span>=<span class="string">" icon-"</span>] &#123;</span><br><span class="line">  <span class="comment">/* use !important to prevent issues with browser extensions that change fonts */</span></span><br><span class="line">  font-family: <span class="string">"icomoon"</span> !important;</span><br><span class="line">  speak: none;</span><br><span class="line">  font-style: normal;</span><br><span class="line">  font-weight: normal;</span><br><span class="line">  font-variant: normal;</span><br><span class="line">  text-transform: none;</span><br><span class="line">  line-height: <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Better Font Rendering =========== */</span></span><br><span class="line">  -webkit-font-smoothing: antialiased;</span><br><span class="line">  -moz-osx-font-smoothing: grayscale;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.icon-wechat:before &#123;</span><br><span class="line">  content: <span class="string">"\e900"</span>;</span><br><span class="line">  color: #7bb32e;</span><br><span class="line">&#125;</span><br><span class="line">.icon-github:before &#123;</span><br><span class="line">  content: <span class="string">"\e902"</span>;</span><br><span class="line">&#125;</span><br><span class="line">.icon-envelop:before &#123;</span><br><span class="line">  content: <span class="string">"\e945"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>src/assets/styles/app.css<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.icons-box &#123;</span><br><span class="line">  width: <span class="number">500</span>px;</span><br><span class="line">  height: <span class="number">100</span>px;</span><br><span class="line">  margin: auto;</span><br><span class="line">  margin-top: <span class="number">180</span>px;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">.icons-box i &#123;</span><br><span class="line">  font-size: <span class="number">100</span>px;</span><br><span class="line">  margin-left: <span class="number">20</span>px;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>src/app.js</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"./assets/fonts/icomoon.css"</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">"./assets/styles/app.css"</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="5-编写webpack配置文件"><a href="#5-编写webpack配置文件" class="headerlink" title="5.编写webpack配置文件"></a>5.编写webpack配置文件</h3><p>webpack.config.js</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">"path"</span>);</span><br><span class="line"><span class="keyword">const</span> MiniCssExtractPlugin = <span class="built_in">require</span>(<span class="string">"mini-css-extract-plugin"</span>);</span><br><span class="line"><span class="keyword">const</span> HtmlWebpackPlugin = <span class="built_in">require</span>(<span class="string">"html-webpack-plugin"</span>);</span><br><span class="line"><span class="keyword">const</span> CleanWebpackPlugin = <span class="built_in">require</span>(<span class="string">"clean-webpack-plugin"</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  mode: <span class="string">"development"</span>, <span class="comment">// 开发模式</span></span><br><span class="line">  entry: &#123;</span><br><span class="line">    app: <span class="string">"./src/app.js"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  output: &#123;</span><br><span class="line">    publicPath: <span class="string">'/'</span>, <span class="comment">// 打包后资源文件的引用会基于此路径</span></span><br><span class="line">    path: path.resolve(__dirname, <span class="string">"dist"</span>), <span class="comment">// 打包后的输出目录</span></span><br><span class="line">    filename: <span class="string">"[id].[name].[chunkhash:8].bundle.js"</span>, <span class="comment">// 在development模式下,id为name</span></span><br><span class="line">    chunkFilename: <span class="string">"[id].[name].[chunkhash:8].chunk.js"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  devtool: <span class="string">"source-map"</span>, <span class="comment">// </span></span><br><span class="line">  devServer: &#123;</span><br><span class="line">    contentBase: path.join(__dirname, <span class="string">"dist"</span>),</span><br><span class="line">    port: <span class="number">8000</span>,</span><br><span class="line">    hot: <span class="literal">false</span>,</span><br><span class="line">    overlay: <span class="literal">true</span>,</span><br><span class="line">    historyApiFallback: &#123;</span><br><span class="line">      rewrites: [&#123; <span class="attr">from</span>: <span class="regexp">/.*/</span>, <span class="attr">to</span>: <span class="string">"/index.html"</span> &#125;]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="built_in">module</span>: &#123;</span><br><span class="line">    rules: [</span><br><span class="line">      &#123;</span><br><span class="line">        test: <span class="regexp">/\.css$/</span>,</span><br><span class="line">        use: [</span><br><span class="line">          MiniCssExtractPlugin.loader,</span><br><span class="line">          <span class="string">"css-loader"</span></span><br><span class="line">        ]</span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        test: <span class="regexp">/\.(eot|woff2?|ttf|svg)$/</span>,</span><br><span class="line">        use: [</span><br><span class="line">          &#123;</span><br><span class="line">            loader: <span class="string">"url-loader"</span>,</span><br><span class="line">            options: &#123;</span><br><span class="line">              name: <span class="string">"[name]-[hash:5].min.[ext]"</span>,</span><br><span class="line">              limit: <span class="number">3000</span>,</span><br><span class="line">              publicPath: <span class="string">"fonts/"</span>,</span><br><span class="line">              outputPath: <span class="string">"fonts/"</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  plugins: [</span><br><span class="line">    <span class="keyword">new</span> HtmlWebpackPlugin(&#123; <span class="comment">// 自动生成html,并且自动导入所有依赖同步包</span></span><br><span class="line">      filename: <span class="string">"index.html"</span>,</span><br><span class="line">      template: <span class="string">"./index.html"</span>,</span><br><span class="line">      minify: &#123;</span><br><span class="line">        <span class="comment">// collapseWhitespace: true // 压缩</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;),</span><br><span class="line">    <span class="keyword">new</span> MiniCssExtractPlugin(&#123;</span><br><span class="line">      filename: <span class="string">"[id].[name].[chunkhash:8].css"</span>,</span><br><span class="line">      chunkFilename: <span class="string">"[id].[name].[chunkhash:8].css"</span></span><br><span class="line">    &#125;),</span><br><span class="line">    <span class="keyword">new</span> CleanWebpackPlugin([<span class="string">"dist"</span>])</span><br><span class="line">  ]</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="6-修改package-json"><a href="#6-修改package-json" class="headerlink" title="6.修改package.json"></a>6.修改package.json</h3><p>package.json 添加 script 脚本<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"scripts"</span>: &#123;</span><br><span class="line">  <span class="string">"dev"</span>: <span class="string">"webpack-dev-server --open"</span></span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure></p>
+<h3 id="7-执行打包命令"><a href="#7-执行打包命令" class="headerlink" title="7.执行打包命令"></a>7.执行打包命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm run dev</span><br></pre></td></tr></table></figure>
+<p>运行成功后，会自动打开浏览器并显示 index.html 页面，修改 css 或 js 代码后，浏览器会自动刷新。</p>
+    </div>
+  </div>
+  
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : Simple <br/>
+        
+        原文链接 : <a href="">https://simplecodecx.github.io/blog/20190311/f1f1f195.html</a><br>
+        版权声明 : 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！
+        </blockquote>
+      </div>
+    </div>
+  
+  
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/前端构建工具/">
+              #前端构建工具
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/blog/20190311/8515384d.html" target="_self">webpack4实践笔记17 clean-webpack-plugin (清除模式)</a>
+      </div>
+    
+    
+  </nav>
+
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz", "WaR7nrzhliHj9aVwdQzkdlGd");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
+</div>
+
+
+    <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2018, 11, 16).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+    <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+  </div>
+
+  
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+  
+
+  <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+  
+</body>
+
+</html>

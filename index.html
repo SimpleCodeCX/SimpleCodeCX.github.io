@@ -1,20 +1,1243 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="技术、音乐、个人博客"><title>Simple的个人博客</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/8.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Simple的个人博客</h1><a id="logo" href="/.">Simple的个人博客</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title"><a href="/blog/20181223/e2c87752.html">@angular前端项目代码优化：构建Api Tree</a></h1><div class="post-meta">2018-12-23</div><div class="post-content"><blockquote>
-<p>在前端项目的开发过程中，往往后端会给到一份数据接口（本文简称api），为了减少后期的维护以及出错成本，我的考虑是希望能够找到这么一种方法，可以将所有的api以某种方式统一的管理起来，并且很方便的进行维护，比如当后端修改了api名，我可以很快的定位到该api进行修改，或者当后端添加了新的api，我可以很快的知道具体是一个api写漏了。<br>于是，我有了构建Api Tree的想法。<br></div><p class="readmore"><a href="/blog/20181223/e2c87752.html">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/blog/20181216/a2214845.html">关于依赖注入(typescript)</a></h1><div class="post-meta">2018-12-16</div><div class="post-content"><blockquote>
-<p>依赖注入（DI）和控制反转（IOC）基本是一个意思，因为说起来谁都离不开谁。<br>简单来说，类A依赖类B，但A不控制B的创建和销毁，仅使用B，那么B的控制权则交给A之外处理，这叫控制反转（IOC）。<br></div><p class="readmore"><a href="/blog/20181216/a2214845.html">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/blog/20181209/8d45a80b.html">如何解决前端跨域问题</a></h1><div class="post-meta">2018-12-09</div><div class="post-content"><blockquote>
-<p>跨域主要是浏览器限制的，浏览器要求请求的url地址与当前的页面的url地址处于域名、端口号、协议一致，如果出现其中的一项不一致，则跨域。<br></div><p class="readmore"><a href="/blog/20181209/8d45a80b.html">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/blog/20181130/3ba3fd82.html">关于js正则表达式的贪婪和懒惰模式</a></h1><div class="post-meta">2018-11-30</div><div class="post-content"><blockquote>
-<p>正则表达式的量词有：* + ? {}<br>量词默认是贪婪模式，当在量词后面加上一个问号?时，就变成了懒惰模式。<br></div><p class="readmore"><a href="/blog/20181130/3ba3fd82.html">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/blog/20181124/19bf8033.html">基于js对观察订阅者模式的一些体会和应用场景</a></h1><div class="post-meta">2018-11-24</div><div class="post-content"><blockquote>
-<p>场景：在项目中，不同页面的header样式一样，只有title文字不一样，比如page1显示的titile是’page1’，而page2显示的titile是’page2’,于是我把header做成了一个组件，而每个页面也是一个组件，因此通过SimpleObservable就可以实现组件与组件间的间接单向通信，即观察者（observer）监听被观察者（observable），被<br>观察者触发观察者。<br></div><p class="readmore"><a href="/blog/20181124/19bf8033.html">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/blog/20181115/7df91c4c.html">关于js（es5）如何优雅地创建对象</a></h1><div class="post-meta">2018-11-15</div><div class="post-content"><blockquote>
-<p>对象（Object Oriented，OO）对于基于类的语言来说是再普通不过的一个概念 了，比如C++，Java等等。<br>而在es5（以下js指es5）中，由于没有类的概念，因此它的对象与其他基于类的语言的对象是不同的。<br>因此在js中，关于对象的创建方法也有所不一样。<br>本文介绍各种创建js对象的方法，以及优缺点。<br></div><p class="readmore"><a href="/blog/20181115/7df91c4c.html">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/blog/20181108/16dc22b.html">基于mocha、should.js、karma、travis ci实现前端自动化持续测试</a></h1><div class="post-meta">2018-11-08</div><div class="post-content"><blockquote>
-<p>首先你觉得测试重要吗？为什么重要？</p>
-<p>这里举个例子，假如你写了一个逻辑稍微比较复杂的函数，这个函数被很多地方调用到，那么当过了N多天之后，你可能快要忘记这里面的逻辑了，此时你可能出于某种原因需要为这个函数增加一些功能，修改这个函数的代码，那么你要怎么做才能做到修改后不影响其他的调用者呢，或者说，你要怎么做，才能快速的知道哪些地方受影响，哪些地方不受影响呢？<br></div><p class="readmore"><a href="/blog/20181108/16dc22b.html">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/blog/20181103/d968dc4.html">基于nodejs的雪碧图制作工具</a></h1><div class="post-meta">2018-11-03</div><div class="post-content"><blockquote>
-<p>雪碧图（CSS sprite ），就是把很多小图标合并为一张图片。<br>在Web开发中，使用雪碧图是优化Web性能的一种方法。</p>
-<p>雪碧图的原理就是将页面中使用到的小图标合成为一张总图。这样的话当我们想要使用雪碧图中的某一个小图标，应该通过如何实现呢？</p>
-<p>答案是通过css的background-position，background-position的默认坐标是（0，0），（这次主要讲雪碧图制作工具）<br></div><p class="readmore"><a href="/blog/20181103/d968dc4.html">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/blog/20180923/4db4f43.html">Diffie-Hellman密钥协商算法</a></h1><div class="post-meta">2018-09-23</div><div class="post-content"><blockquote>
-<p>严格来说，DH算法其实并不是一种加密算法，因为它本身并不是用于加密的，我的理解是用于双方协商计算，即双方按照某种合约进行计算，从而计算出一种相同的结果。<br></div><p class="readmore"><a href="/blog/20180923/4db4f43.html">阅读全文</a></p></div><div class="post"><h1 class="post-title"><a href="/blog/20180827/a09cfe7a.html">基于ionic4、cordova搭建android开发环境</a></h1><div class="post-meta">2018-08-27</div><div class="post-content"><blockquote>
-<p>最近公司有一个项目需求是利用h5进行跨平台开发，这里所说的跨平台开发指的是：将h5代码利用某种方式或工具环境进行打包，最后生成android的apk以及ios的ipa。<br></div><p class="readmore"><a href="/blog/20180827/a09cfe7a.html">阅读全文</a></p></div><nav class="page-navigator"><span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">下一页</a></nav></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"/><div id="local-search-result"></div></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/angular/">angular</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/hybrid/">hybrid</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/javascript/">javascript</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/nodejs/">nodejs</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端跨域/">前端跨域</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/加密算法/">加密算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/正则/">正则</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/测试/">测试</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/后端/" style="font-size: 15px;">后端</a> <a href="/tags/hybrid/" style="font-size: 15px;">hybrid</a> <a href="/tags/加密算法/" style="font-size: 15px;">加密算法</a> <a href="/tags/工具/" style="font-size: 15px;">工具</a> <a href="/tags/前端/" style="font-size: 15px;">前端</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/blog/20181223/e2c87752.html">@angular前端项目代码优化：构建Api Tree</a></li><li class="post-list-item"><a class="post-list-link" href="/blog/20181216/a2214845.html">关于依赖注入(typescript)</a></li><li class="post-list-item"><a class="post-list-link" href="/blog/20181209/8d45a80b.html">如何解决前端跨域问题</a></li><li class="post-list-item"><a class="post-list-link" href="/blog/20181130/3ba3fd82.html">关于js正则表达式的贪婪和懒惰模式</a></li><li class="post-list-item"><a class="post-list-link" href="/blog/20181124/19bf8033.html">基于js对观察订阅者模式的一些体会和应用场景</a></li><li class="post-list-item"><a class="post-list-link" href="/blog/20181115/7df91c4c.html">关于js（es5）如何优雅地创建对象</a></li><li class="post-list-item"><a class="post-list-link" href="/blog/20181108/16dc22b.html">基于mocha、should.js、karma、travis ci实现前端自动化持续测试</a></li><li class="post-list-item"><a class="post-list-link" href="/blog/20181103/d968dc4.html">基于nodejs的雪碧图制作工具</a></li><li class="post-list-item"><a class="post-list-link" href="/blog/20180923/4db4f43.html">Diffie-Hellman密钥协商算法</a></li><li class="post-list-item"><a class="post-list-link" href="/blog/20180827/a09cfe7a.html">基于ionic4、cordova搭建android开发环境</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 技术博客</i></div><ul></ul><a href="https://www.jianshu.com/u/9be5a5a0beb9" title="简书" target="_blank">简书</a><ul></ul><a href="https://blog.csdn.net/simple__dream" title="csdn" target="_blank">csdn</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">Simple的个人博客.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.3.5/jquery.fancybox.min.css"><script type="text/javascript" src="/js/search.js?v=0.0.0"></script><script>var search_path = 'search.xml';
-if (search_path.length == 0) {
-   search_path = 'search.xml';
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com" />
+  
+  
+
+  <title>
+    
+    Simple的个人博客
+  </title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta name="keywords" content="Hexo, theme-bmw" />
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n', 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+  <meta name="description" content="技术、音乐、个人博客">
+  
+
+  
+
+  
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+
+  
+  <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+  <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+<body>
+
+  
+
+  <div id="app">
+
+    <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">Simple</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a 
+              href="/"
+              target="_self"
+            >
+              首页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a 
+              href="/archives/"
+              target="_self"
+            >
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a 
+              href="/categories/"
+              target="_self"
+            >
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a 
+              href="/tags/"
+              target="_self"
+            >
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else>其他</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a 
+                    href="https://github.com/SimpleCodeCX" 
+                    target="_blank"
+                  >
+                    Github
+                  </a>
+                </li>
+              
+                <li>
+                  <a 
+                    href="https://www.jianshu.com/u/9be5a5a0beb9" 
+                    target="_blank"
+                  >
+                    简书
+                  </a>
+                </li>
+              
+                <li>
+                  <a 
+                    href="https://juejin.im/user/5bec5067e51d451402495715" 
+                    target="_blank"
+                  >
+                    掘金
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+    
+<div class="container home-index">
+  
+  <div class="post">
+    <h1 class="article-title">
+      <a href="/blog/20190311/f1f1f195.html">
+        <span>webpack4实践笔记18 webpack-dev-server (开发模式)</span>
+      </a>
+    </h1>
+    <!-- PC端文章信息 -->
+    <div class="article-top-meta pc-view">
+      <span>
+        发布时间 : 2019-03-11
+      </span>
+    </div>
+    <!-- 移动端文章信息 -->
+    <div class="article-top-meta mobile-view">
+      <span>
+        发布 : 2019-03-11
+      </span>
+      
+        <span>
+        分类 :
+          <a href="/categories/webpack/">
+            webpack
+          </a>
+        </span>
+      
+      
+        <span>
+          浏览 : <span class="article-timer" data-identity="f1f1f195.html"></span>
+        </span>
+      
+    </div>
+    
+    <!-- 文章简介 -->
+    <div class="article-content">
+      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
+        <blockquote>
+<p>development 模式:<br>在开发环境中，我们希望能够更加方便的进行开发以及调试代码，当项目运行起来后，可以自动打开浏览器，webpack 能够通过监听代码的修改，自动重新编译打包，并且实时刷新浏览器。<br>production 模式:<br>在生产模式中，我们希望能够得到一个更小的 bundle，更轻量的 source &gt;map，从而改善加载时间。<br>如果没有设置 <code>mode</code> ，webpack 默认以 <code>production</code> 模式进行打包。<br>
+      </div>
+    </div>
+    <div class="article-footer">
+      <div class="article-meta pull-left">
+        <!-- 分类pc端可见 -->
+        <span class="pc-view">
+          
+            <i class="iconfont icon-tag"></i>分类:
+            <a href="/categories/webpack/">
+              webpack
+            </a>
+          </span>
+          
+        <span>
+          
+            <i class="iconfont icon-06tags"></i>标签:
+            
+              <span class="span--tag">
+                <a href="/tags/前端构建工具/">
+                  #前端构建工具
+                </a>
+              </span>
+            
+                    
+        </span>
+      </div>
+      
+        <div class="article-meta pull-right">
+          <span class="pc-view">
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="f1f1f195.html"></span>
+          </span>
+        </div>
+      
+    </div>
+  </div>
+  
+  <div class="post">
+    <h1 class="article-title">
+      <a href="/blog/20190311/8515384d.html">
+        <span>webpack4实践笔记17 clean-webpack-plugin (清除模式)</span>
+      </a>
+    </h1>
+    <!-- PC端文章信息 -->
+    <div class="article-top-meta pc-view">
+      <span>
+        发布时间 : 2019-03-11
+      </span>
+    </div>
+    <!-- 移动端文章信息 -->
+    <div class="article-top-meta mobile-view">
+      <span>
+        发布 : 2019-03-11
+      </span>
+      
+        <span>
+        分类 :
+          <a href="/categories/webpack/">
+            webpack
+          </a>
+        </span>
+      
+      
+        <span>
+          浏览 : <span class="article-timer" data-identity="8515384d.html"></span>
+        </span>
+      
+    </div>
+    
+    <!-- 文章简介 -->
+    <div class="article-content">
+      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
+        <blockquote>
+<p>在之前的 demo 中，webpack 打包后会在根目录下自动创建 dist 目录，并且把生成的文件输出到 dist 下。<br>当配置的输出包名含有 <code>[hash]</code> 时，hash值会随着文件内容的改变而改变。<br>因此，我们需要在下一次 webpack 打包输出之前，把 dist 目录清空。<br>clean-webpack-plugin 插件就能帮你做到。<br>
+      </div>
+    </div>
+    <div class="article-footer">
+      <div class="article-meta pull-left">
+        <!-- 分类pc端可见 -->
+        <span class="pc-view">
+          
+            <i class="iconfont icon-tag"></i>分类:
+            <a href="/categories/webpack/">
+              webpack
+            </a>
+          </span>
+          
+        <span>
+          
+            <i class="iconfont icon-06tags"></i>标签:
+            
+              <span class="span--tag">
+                <a href="/tags/前端构建工具/">
+                  #前端构建工具
+                </a>
+              </span>
+            
+                    
+        </span>
+      </div>
+      
+        <div class="article-meta pull-right">
+          <span class="pc-view">
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="8515384d.html"></span>
+          </span>
+        </div>
+      
+    </div>
+  </div>
+  
+  <div class="post">
+    <h1 class="article-title">
+      <a href="/blog/20190311/7be060d8.html">
+        <span>webpack4实践笔记16 webpack 处理字体</span>
+      </a>
+    </h1>
+    <!-- PC端文章信息 -->
+    <div class="article-top-meta pc-view">
+      <span>
+        发布时间 : 2019-03-11
+      </span>
+    </div>
+    <!-- 移动端文章信息 -->
+    <div class="article-top-meta mobile-view">
+      <span>
+        发布 : 2019-03-11
+      </span>
+      
+        <span>
+        分类 :
+          <a href="/categories/webpack/">
+            webpack
+          </a>
+        </span>
+      
+      
+        <span>
+          浏览 : <span class="article-timer" data-identity="7be060d8.html"></span>
+        </span>
+      
+    </div>
+    
+    <!-- 文章简介 -->
+    <div class="article-content">
+      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
+        <blockquote>
+<p>通过 url-loader 和 file-loader 配合可以实现：<br>当字体大小 &lt; 某个限定值（limit）时，转换为 base64 字符传，并打包进 bundle 中。<br>当字体大小 &gt; 某个限定值时，将图片放到指定目录下，并通过 url 引用。<br>
+      </div>
+    </div>
+    <div class="article-footer">
+      <div class="article-meta pull-left">
+        <!-- 分类pc端可见 -->
+        <span class="pc-view">
+          
+            <i class="iconfont icon-tag"></i>分类:
+            <a href="/categories/webpack/">
+              webpack
+            </a>
+          </span>
+          
+        <span>
+          
+            <i class="iconfont icon-06tags"></i>标签:
+            
+              <span class="span--tag">
+                <a href="/tags/前端构建工具/">
+                  #前端构建工具
+                </a>
+              </span>
+            
+                    
+        </span>
+      </div>
+      
+        <div class="article-meta pull-right">
+          <span class="pc-view">
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="7be060d8.html"></span>
+          </span>
+        </div>
+      
+    </div>
+  </div>
+  
+  <div class="post">
+    <h1 class="article-title">
+      <a href="/blog/20190311/1275f9d9.html">
+        <span>webpack4实践笔记15 webpack 处理图片</span>
+      </a>
+    </h1>
+    <!-- PC端文章信息 -->
+    <div class="article-top-meta pc-view">
+      <span>
+        发布时间 : 2019-03-11
+      </span>
+    </div>
+    <!-- 移动端文章信息 -->
+    <div class="article-top-meta mobile-view">
+      <span>
+        发布 : 2019-03-11
+      </span>
+      
+        <span>
+        分类 :
+          <a href="/categories/webpack/">
+            webpack
+          </a>
+        </span>
+      
+      
+        <span>
+          浏览 : <span class="article-timer" data-identity="1275f9d9.html"></span>
+        </span>
+      
+    </div>
+    
+    <!-- 文章简介 -->
+    <div class="article-content">
+      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
+        <blockquote>
+<p>通过 url-loader 和 file-loader 配合可以实现：<br>当图片大小 &lt; 某个限定值（limit）时，转换为 base64 字符传，并打包进 bundle 中。<br>当图片大小 &gt; 某个限定值时，将图片放到指定目录下，并通过 url 引用。<br>
+      </div>
+    </div>
+    <div class="article-footer">
+      <div class="article-meta pull-left">
+        <!-- 分类pc端可见 -->
+        <span class="pc-view">
+          
+            <i class="iconfont icon-tag"></i>分类:
+            <a href="/categories/webpack/">
+              webpack
+            </a>
+          </span>
+          
+        <span>
+          
+            <i class="iconfont icon-06tags"></i>标签:
+            
+              <span class="span--tag">
+                <a href="/tags/前端构建工具/">
+                  #前端构建工具
+                </a>
+              </span>
+            
+                    
+        </span>
+      </div>
+      
+        <div class="article-meta pull-right">
+          <span class="pc-view">
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="1275f9d9.html"></span>
+          </span>
+        </div>
+      
+    </div>
+  </div>
+  
+  <div class="post">
+    <h1 class="article-title">
+      <a href="/blog/20190311/b166f567.html">
+        <span>webpack4实践笔记14 mini-css-extract-plugin + SplitChunksPlugin 处理 css 和 scss</span>
+      </a>
+    </h1>
+    <!-- PC端文章信息 -->
+    <div class="article-top-meta pc-view">
+      <span>
+        发布时间 : 2019-03-11
+      </span>
+    </div>
+    <!-- 移动端文章信息 -->
+    <div class="article-top-meta mobile-view">
+      <span>
+        发布 : 2019-03-11
+      </span>
+      
+        <span>
+        分类 :
+          <a href="/categories/webpack/">
+            webpack
+          </a>
+        </span>
+      
+      
+        <span>
+          浏览 : <span class="article-timer" data-identity="b166f567.html"></span>
+        </span>
+      
+    </div>
+    
+    <!-- 文章简介 -->
+    <div class="article-content">
+      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
+        <blockquote>
+<p>虽然webpack4不支持 <code>ExtractTextWebpackPlugin</code> 插件，但是我们可以使用 <code>mini-css-extract-plugin</code> 来实现把 css 提取为单独的文件。<br>
+      </div>
+    </div>
+    <div class="article-footer">
+      <div class="article-meta pull-left">
+        <!-- 分类pc端可见 -->
+        <span class="pc-view">
+          
+            <i class="iconfont icon-tag"></i>分类:
+            <a href="/categories/webpack/">
+              webpack
+            </a>
+          </span>
+          
+        <span>
+          
+            <i class="iconfont icon-06tags"></i>标签:
+            
+              <span class="span--tag">
+                <a href="/tags/前端构建工具/">
+                  #前端构建工具
+                </a>
+              </span>
+            
+                    
+        </span>
+      </div>
+      
+        <div class="article-meta pull-right">
+          <span class="pc-view">
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="b166f567.html"></span>
+          </span>
+        </div>
+      
+    </div>
+  </div>
+  
+  <div class="post">
+    <h1 class="article-title">
+      <a href="/blog/20190311/41443a76.html">
+        <span>webpack4实践笔记13 webpack通过postcss-loader加工css和scss</span>
+      </a>
+    </h1>
+    <!-- PC端文章信息 -->
+    <div class="article-top-meta pc-view">
+      <span>
+        发布时间 : 2019-03-11
+      </span>
+    </div>
+    <!-- 移动端文章信息 -->
+    <div class="article-top-meta mobile-view">
+      <span>
+        发布 : 2019-03-11
+      </span>
+      
+        <span>
+        分类 :
+          <a href="/categories/webpack/">
+            webpack
+          </a>
+        </span>
+      
+      
+        <span>
+          浏览 : <span class="article-timer" data-identity="41443a76.html"></span>
+        </span>
+      
+    </div>
+    
+    <!-- 文章简介 -->
+    <div class="article-content">
+      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
+        <blockquote>
+<p>postcss: postcss 有一个插件体系，postcss 可以通过选择相应的插件对 css 进行转换和处理。<br>比如可以通过 Autoprefixer 插件来处理 css 的前缀，以实现浏览器的兼容性。<br>postcss-loader: webpack 通过 postcss-loader 来调用 postcss。<br>
+      </div>
+    </div>
+    <div class="article-footer">
+      <div class="article-meta pull-left">
+        <!-- 分类pc端可见 -->
+        <span class="pc-view">
+          
+            <i class="iconfont icon-tag"></i>分类:
+            <a href="/categories/webpack/">
+              webpack
+            </a>
+          </span>
+          
+        <span>
+          
+            <i class="iconfont icon-06tags"></i>标签:
+            
+              <span class="span--tag">
+                <a href="/tags/前端构建工具/">
+                  #前端构建工具
+                </a>
+              </span>
+            
+                    
+        </span>
+      </div>
+      
+        <div class="article-meta pull-right">
+          <span class="pc-view">
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="41443a76.html"></span>
+          </span>
+        </div>
+      
+    </div>
+  </div>
+  
+  <div class="post">
+    <h1 class="article-title">
+      <a href="/blog/20190311/5bb783a3.html">
+        <span>webpack4实践笔记12 webpack 处理 scss</span>
+      </a>
+    </h1>
+    <!-- PC端文章信息 -->
+    <div class="article-top-meta pc-view">
+      <span>
+        发布时间 : 2019-03-11
+      </span>
+    </div>
+    <!-- 移动端文章信息 -->
+    <div class="article-top-meta mobile-view">
+      <span>
+        发布 : 2019-03-11
+      </span>
+      
+        <span>
+        分类 :
+          <a href="/categories/webpack/">
+            webpack
+          </a>
+        </span>
+      
+      
+        <span>
+          浏览 : <span class="article-timer" data-identity="5bb783a3.html"></span>
+        </span>
+      
+    </div>
+    
+    <!-- 文章简介 -->
+    <div class="article-content">
+      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
+        <blockquote>
+<p>webpack 处理 scss<br>
+      </div>
+    </div>
+    <div class="article-footer">
+      <div class="article-meta pull-left">
+        <!-- 分类pc端可见 -->
+        <span class="pc-view">
+          
+            <i class="iconfont icon-tag"></i>分类:
+            <a href="/categories/webpack/">
+              webpack
+            </a>
+          </span>
+          
+        <span>
+          
+            <i class="iconfont icon-06tags"></i>标签:
+            
+              <span class="span--tag">
+                <a href="/tags/前端构建工具/">
+                  #前端构建工具
+                </a>
+              </span>
+            
+                    
+        </span>
+      </div>
+      
+        <div class="article-meta pull-right">
+          <span class="pc-view">
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="5bb783a3.html"></span>
+          </span>
+        </div>
+      
+    </div>
+  </div>
+  
+  <div class="post">
+    <h1 class="article-title">
+      <a href="/blog/20190311/28ba9e99.html">
+        <span>webpack4实践笔记11 webpack处理css</span>
+      </a>
+    </h1>
+    <!-- PC端文章信息 -->
+    <div class="article-top-meta pc-view">
+      <span>
+        发布时间 : 2019-03-11
+      </span>
+    </div>
+    <!-- 移动端文章信息 -->
+    <div class="article-top-meta mobile-view">
+      <span>
+        发布 : 2019-03-11
+      </span>
+      
+        <span>
+        分类 :
+          <a href="/categories/webpack/">
+            webpack
+          </a>
+        </span>
+      
+      
+        <span>
+          浏览 : <span class="article-timer" data-identity="28ba9e99.html"></span>
+        </span>
+      
+    </div>
+    
+    <!-- 文章简介 -->
+    <div class="article-content">
+      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
+        <blockquote>
+<p>在 webpack 中，所有类型的文件都是模块，比如 js、css、图片、字体、json（可以说是万物皆模块）。<br>但是，在普通的 js 代码中，我们直接 import (或require) 一张图片或css是会报错的。<br>但在 webpack 构建的项目中，归功于 loader（加载器），webpack 能够把 js 的模块化推广至其他类型文件，比如：<code>import(&#39;xxx.css&#39;);</code><br>
+      </div>
+    </div>
+    <div class="article-footer">
+      <div class="article-meta pull-left">
+        <!-- 分类pc端可见 -->
+        <span class="pc-view">
+          
+            <i class="iconfont icon-tag"></i>分类:
+            <a href="/categories/webpack/">
+              webpack
+            </a>
+          </span>
+          
+        <span>
+          
+            <i class="iconfont icon-06tags"></i>标签:
+            
+              <span class="span--tag">
+                <a href="/tags/前端构建工具/">
+                  #前端构建工具
+                </a>
+              </span>
+            
+                    
+        </span>
+      </div>
+      
+        <div class="article-meta pull-right">
+          <span class="pc-view">
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="28ba9e99.html"></span>
+          </span>
+        </div>
+      
+    </div>
+  </div>
+  
+  <div class="post">
+    <h1 class="article-title">
+      <a href="/blog/20190311/87d97ce2.html">
+        <span>webpack4实践笔记10 关于JS Tree Shaking</span>
+      </a>
+    </h1>
+    <!-- PC端文章信息 -->
+    <div class="article-top-meta pc-view">
+      <span>
+        发布时间 : 2019-03-11
+      </span>
+    </div>
+    <!-- 移动端文章信息 -->
+    <div class="article-top-meta mobile-view">
+      <span>
+        发布 : 2019-03-11
+      </span>
+      
+        <span>
+        分类 :
+          <a href="/categories/webpack/">
+            webpack
+          </a>
+        </span>
+      
+      
+        <span>
+          浏览 : <span class="article-timer" data-identity="87d97ce2.html"></span>
+        </span>
+      
+    </div>
+    
+    <!-- 文章简介 -->
+    <div class="article-content">
+      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
+        <blockquote>
+<p>借助于 es6 (es2015) 模块系统 (import 和 export) 的静态解析，webpack 能够利用 Tree Shaking 进行按需加载，移除掉没有被引用的模块，从而减少包的大小，缩小应用的加载时间，从而提高性能体验。<br>
+      </div>
+    </div>
+    <div class="article-footer">
+      <div class="article-meta pull-left">
+        <!-- 分类pc端可见 -->
+        <span class="pc-view">
+          
+            <i class="iconfont icon-tag"></i>分类:
+            <a href="/categories/webpack/">
+              webpack
+            </a>
+          </span>
+          
+        <span>
+          
+            <i class="iconfont icon-06tags"></i>标签:
+            
+              <span class="span--tag">
+                <a href="/tags/前端构建工具/">
+                  #前端构建工具
+                </a>
+              </span>
+            
+                    
+        </span>
+      </div>
+      
+        <div class="article-meta pull-right">
+          <span class="pc-view">
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="87d97ce2.html"></span>
+          </span>
+        </div>
+      
+    </div>
+  </div>
+  
+  <div class="post">
+    <h1 class="article-title">
+      <a href="/blog/20190311/ecf0b61.html">
+        <span>webpack4实践笔记9 使用 SplitChunksPlugin 分离第三方依赖包以及异步包</span>
+      </a>
+    </h1>
+    <!-- PC端文章信息 -->
+    <div class="article-top-meta pc-view">
+      <span>
+        发布时间 : 2019-03-11
+      </span>
+    </div>
+    <!-- 移动端文章信息 -->
+    <div class="article-top-meta mobile-view">
+      <span>
+        发布 : 2019-03-11
+      </span>
+      
+        <span>
+        分类 :
+          <a href="/categories/webpack/">
+            webpack
+          </a>
+        </span>
+      
+      
+        <span>
+          浏览 : <span class="article-timer" data-identity="ecf0b61.html"></span>
+        </span>
+      
+    </div>
+    
+    <!-- 文章简介 -->
+    <div class="article-content">
+      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
+        <blockquote>
+<p>在单页面或多页面应用中，通过代码分离的方式，能够优化性能。<br>比如把异步加载的代码分离成一个单独的chunk，等到需要调用的时候再按需加载（比如click时），这样可以减少首屏的代码体积，从而提高首屏的加载速度。<br>
+      </div>
+    </div>
+    <div class="article-footer">
+      <div class="article-meta pull-left">
+        <!-- 分类pc端可见 -->
+        <span class="pc-view">
+          
+            <i class="iconfont icon-tag"></i>分类:
+            <a href="/categories/webpack/">
+              webpack
+            </a>
+          </span>
+          
+        <span>
+          
+            <i class="iconfont icon-06tags"></i>标签:
+            
+              <span class="span--tag">
+                <a href="/tags/前端构建工具/">
+                  #前端构建工具
+                </a>
+              </span>
+            
+                    
+        </span>
+      </div>
+      
+        <div class="article-meta pull-right">
+          <span class="pc-view">
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="ecf0b61.html"></span>
+          </span>
+        </div>
+      
+    </div>
+  </div>
+  
+
+  <nav class="page-navigation">
+    
+    
+      <a href="/page/2/">下一页</a>
+    
+  </nav>
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz", "WaR7nrzhliHj9aVwdQzkdlGd");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = false;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
 }
-var path = '/' + search_path;
-searchFunc(path, 'local-search-input', 'local-search-result');
-</script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+</div>
+
+
+    <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2018, 11, 16).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+    <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+  </div>
+
+  
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+  
+
+  <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+  
+</body>
+
+</html>
