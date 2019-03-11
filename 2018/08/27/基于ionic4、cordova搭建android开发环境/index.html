@@ -253,7 +253,9 @@
 
   <div class="article-content">
     <div class="markdown-body">
-      <h3 id="前颜（yan）"><a href="#前颜（yan）" class="headerlink" title="前颜（yan）"></a>前颜（yan）</h3><p>最近公司有一个项目需求是利用h5进行跨平台开发，这里所说的跨平台开发指的是：将h5代码利用某种方式或工具环境进行打包，最后生成android的apk以及ios的ipa。<br>本文只讲解android开发环境，等以后有空了再介绍一篇关于ios的。</p>
+      </p>
+</blockquote>
+<h3 id="前颜（yan）"><a href="#前颜（yan）" class="headerlink" title="前颜（yan）"></a>前颜（yan）</h3><p>最近公司有一个项目需求是利用h5进行跨平台开发，这里所说的跨平台开发指的是：将h5代码利用某种方式或工具环境进行打包，最后生成android的apk以及ios的ipa。<br>本文只讲解android开发环境，等以后有空了再介绍一篇关于ios的。</p>
 <h3 id="一、知识讲解"><a href="#一、知识讲解" class="headerlink" title="一、知识讲解"></a>一、知识讲解</h3><p>本文基于ionic4+cordova构建android应用，首先做一下以下的知识梳理。</p>
 <p>1 ionic是一套用于开发混合手机应用的开源h5框架，包含一套适合于mobile application的ui组件库以及相关访问原生设备的native接口等。目前ionic已更新至ionic4，ionic4的特色在于兼容angular6以及rxjs6，有着angular6的特点，因此，angular的开发者可以很容易的切换到ionic4的开发。<br>ionic官方文档：<a href="https://beta.ionicframework.com/docs/intro" target="_blank" rel="noopener">https://beta.ionicframework.com/docs/intro</a></p>
 <p>2 cordova是一套开源的移动应用开发框架。cordova能够利用web应用（如ionic构建的h5应用）构建android工程以及ios工程（今天只讲android工程）。并且可以编译android工程，最后生成android apk。<br>cordova官方文档：<a href="https://cordova.apache.org/docs/en/latest/guide/overview/index.html" target="_blank" rel="noopener">https://cordova.apache.org/docs/en/latest/guide/overview/index.html</a></p>
@@ -280,7 +282,6 @@
 <p>以上环境搭建成功之后，即可通过cordova命令进行编译：<code>ionic cordova build android</code>，编译成功之后，会在/myApp/platforms/android/app/build/outputs/apk/debug目录下生成一个 xxx.apk。</p>
 <h3 id="六、构建第一个android应用"><a href="#六、构建第一个android应用" class="headerlink" title="六、构建第一个android应用"></a>六、构建第一个android应用</h3><p>至此，一个android apk就生成啦。<br>最后总结一下利用ionic4+cordova构建android应用的过程：<br>1 ionic start myApp blank–type=angular （创建ionic项目）<br>2 ionic cordova platform add android    （添加android平台）<br>3 ionic cordova build android           （编译生成apk）<br>是不是很简单，前提是以上环境都已经搭建好了。</p>
 <p>参考文档：<br>1）cordova：<a href="https://baike.baidu.com/item/Cordova/9192368?fr=aladdin" target="_blank" rel="noopener">https://baike.baidu.com/item/Cordova/9192368?fr=aladdin</a><br>2）ionic：<a href="https://baike.baidu.com/item/ionic/1326386?fr=aladdin" target="_blank" rel="noopener">https://baike.baidu.com/item/ionic/1326386?fr=aladdin</a><br>3）<a href="https://www.cnblogs.com/qypx520/p/6022787.html" target="_blank" rel="noopener">ionic开发android app步骤</a><br>4）2017年Android SDK下载安装及配置教程：<a href="https://blog.csdn.net/love4399/article/details/77164500" target="_blank" rel="noopener">https://blog.csdn.net/love4399/article/details/77164500</a></p>
-
     </div>
   </div>
   
