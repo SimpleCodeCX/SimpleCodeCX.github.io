@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com" />
+  
+  
+
+  <title>
+    
+    @angular前端项目代码优化：构建Api Tree |
+    
+    Simple的个人博客
+  </title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta name="keywords" content="angular,前端," />
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n', 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+  <meta name="description" content="技术、音乐、个人博客">
+  
+
+  
+
+  
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+
+  
+  <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+  <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+<body>
+
+  
+
+  <div id="app">
+
+    <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">Simple</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a 
+              href="/"
+              target="_self"
+            >
+              首页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a 
+              href="/archives/"
+              target="_self"
+            >
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a 
+              href="/categories/"
+              target="_self"
+            >
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a 
+              href="/tags/"
+              target="_self"
+            >
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else>其他</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a 
+                    href="https://github.com/SimpleCodeCX" 
+                    target="_blank"
+                  >
+                    Github
+                  </a>
+                </li>
+              
+                <li>
+                  <a 
+                    href="https://www.jianshu.com/u/9be5a5a0beb9" 
+                    target="_blank"
+                  >
+                    简书
+                  </a>
+                </li>
+              
+                <li>
+                  <a 
+                    href="https://juejin.im/user/5bec5067e51d451402495715" 
+                    target="_blank"
+                  >
+                    掘金
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+    
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>@angular前端项目代码优化：构建Api Tree</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2018-12-23
+    </span>
+    
+      <span>
+        分类 : 
+          <a href="/categories/angular/">
+            angular
+          </a>
+      </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="e2c87752.html"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      </p>
+</blockquote>
+<h3 id="前颜（yan）"><a href="#前颜（yan）" class="headerlink" title="前颜（yan）"></a>前颜（yan）</h3><p>在前端项目的开发过程中，往往后端会给到一份数据接口（本文简称api），为了减少后期的维护以及出错成本，我的考虑是希望能够找到这么一种方法，可以将所有的api以某种方式统一的管理起来，并且很方便的进行维护，比如当后端修改了api名，我可以很快的定位到该api进行修改，或者当后端添加了新的api，我可以很快的知道具体是一个api写漏了。<br>于是，我有了构建Api Tree的想法。</p>
+<h3 id="一、前后端分离（Resful-api）"><a href="#一、前后端分离（Resful-api）" class="headerlink" title="一、前后端分离（Resful api）"></a>一、前后端分离（Resful api）</h3><p>在前后端分离的开发模式中，前后端的交互点主要在于各个数据接口，也就是说后端把每个功能封装成了api，供前端调用。<br>举个例子，假设后端提供了关于user的以下3个api：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> http(s):<span class="comment">//www.xxx.com/api/v1/user/&#123; id &#125;</span></span><br><span class="line"><span class="number">2</span> http(s):<span class="comment">//www.xxx.com/api/v1/user/getByName/&#123; name &#125;</span></span><br><span class="line"><span class="number">3</span> http(s):<span class="comment">//www.xxx.com/api/v1/user/getByAge/&#123; age &#125;</span></span><br></pre></td></tr></table></figure></p>
+<p>对应的api描述如下（为了方便理解，这里只考虑get请求）：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> 获取用户id的用户数据</span><br><span class="line"><span class="number">2</span> 获取用户名为name的用户信息    </span><br><span class="line"><span class="number">3</span> 获取年龄为age的用户列表</span><br></pre></td></tr></table></figure></p>
+<h3 id="二、在Component中调用api接口获取数据"><a href="#二、在Component中调用api接口获取数据" class="headerlink" title="二、在Component中调用api接口获取数据"></a>二、在Component中调用api接口获取数据</h3><p>目前各大前端框架比如angular、vue以及react等，都有提供相关HttpClient，用来发起http请求，比如get、post、put、delete等，由于本人比较熟悉angular，下面代码以angular进行举例(其他框架做法类似)，代码统一使用typescript语法。</p>
+<p>在app.component.ts中调用api：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">'@angular/core'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HttpClient &#125; <span class="keyword">from</span> <span class="string">'@angular/common/http'</span>;</span><br><span class="line"></span><br><span class="line">@Component(&#123;</span><br><span class="line">  selector: <span class="string">'app-root'</span>,</span><br><span class="line">  templateUrl: <span class="string">'./app.component.html'</span>,</span><br><span class="line">  styleUrls: [<span class="string">'./app.component.scss'</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  userInfo;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">constructor</span>(private http: HttpClient) &#123;</span><br><span class="line">    <span class="keyword">this</span>.getUserById(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> getUserById(userId) &#123;</span><br><span class="line">    <span class="keyword">const</span> url = <span class="string">`https://www.xxx.com/api/v1/user/<span class="subst">$&#123;userId&#125;</span>`</span>;</span><br><span class="line">    <span class="keyword">this</span>.userInfo = <span class="keyword">await</span> <span class="keyword">this</span>.http.get(url).toPromise();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="三、封装UserHttpService"><a href="#三、封装UserHttpService" class="headerlink" title="三、封装UserHttpService"></a>三、封装UserHttpService</h3><p> 在项目中，由于多个页面可能需要调用同一个api，为了减少代码的冗余以及方便维护，比较好的方式是将所有的api封装到一个Service中，然后将这个Service实例化成单例模式，为所有的页面提供http服务。<br>       angular提供了依赖注入的功能，可以将Service注入到Module中，并且在Module中的各个Component共享同一个Service，因此不需要手动去实现Service的单例模式。<br>代码如下：<br>user.http.service.ts<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Injectable &#125; <span class="keyword">from</span> <span class="string">'@angular/core'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HttpClient &#125; <span class="keyword">from</span> <span class="string">'@angular/common/http'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> HOST_URL = <span class="string">`https://www.xxx.com/api/v1`</span>;</span><br><span class="line"></span><br><span class="line">@Injectable()</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">UserHttpService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">constructor</span>(private http: HttpClient) &#123; &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> getUserById(userId) &#123;</span><br><span class="line">    <span class="keyword">const</span> url = <span class="string">`<span class="subst">$&#123;HOST_URL&#125;</span>/user/<span class="subst">$&#123;userId&#125;</span>`</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.http.get(url).toPromise();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> getUserByName(name) &#123;</span><br><span class="line">    <span class="keyword">const</span> url = <span class="string">`<span class="subst">$&#123;HOST_URL&#125;</span>/user/getByName/<span class="subst">$&#123;name&#125;</span>`</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.http.get(url).toPromise();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> getUserByAge(age) &#123;</span><br><span class="line">    <span class="keyword">const</span> url = <span class="string">`<span class="subst">$&#123;HOST_URL&#125;</span>/user/getByAge/<span class="subst">$&#123;age&#125;</span>`</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.http.get(url).toPromise();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>app.component.ts<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Component &#125; <span class="keyword">from</span> <span class="string">'@angular/core'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; UserHttpService &#125; <span class="keyword">from</span> <span class="string">'./user.http.service'</span>;</span><br><span class="line">@Component(&#123;</span><br><span class="line">  selector: <span class="string">'app-root'</span>,</span><br><span class="line">  templateUrl: <span class="string">'./app.component.html'</span>,</span><br><span class="line">  styleUrls: [<span class="string">'./app.component.scss'</span>]</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AppComponent</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">constructor</span>(private userHttpService: UserHttpService) &#123;</span><br><span class="line">    <span class="keyword">this</span>.getUserById(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> getUserById(userId) &#123;</span><br><span class="line">    <span class="keyword">const</span> userInfo = <span class="keyword">await</span> <span class="keyword">this</span>.userHttpService.getUserById(userId);</span><br><span class="line">    <span class="built_in">console</span>.log(userInfo);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> getUserByName(name) &#123;</span><br><span class="line">    <span class="keyword">const</span> userInfo = <span class="keyword">await</span> <span class="keyword">this</span>.userHttpService.getUserByName(name);</span><br><span class="line">    <span class="built_in">console</span>.log(userInfo);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> getUserByAge(age) &#123;</span><br><span class="line">    <span class="keyword">const</span> userInfoList = <span class="keyword">await</span> <span class="keyword">this</span>.userHttpService.getUserByAge(age);</span><br><span class="line">    <span class="built_in">console</span>.log(userInfoList);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这样的好处在于:<br>1、团队合作：<br>   可以将前端项目分为HttpService层和Component层，由不同的人进行分开维护<br>2、减少代码的冗余：<br>   在多个Component中调用同一个api时，不需要写多份代码<br>3、降低维护和扩展成本：<br>  当后端增加或修改接口时，由于所有的user api都在UserHttpService里，所以能够很容易的进行接口调整，并且不影响Component层的代码</p>
+<p>但以上方案还存在一个缺点，即url使用字符串拼接的形式：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> url = <span class="string">`<span class="subst">$&#123;HOST_URL&#125;</span>/user/getByName/<span class="subst">$&#123;name&#125;</span>`</span>;</span><br></pre></td></tr></table></figure></p>
+<p>这样容易出现以下问题：<br>1、接口名拼接出错，并且由于是字符串拼接，不会有语法提示（ts）<br>2、没有一份完整的映射后端的api表，出现问题时，不容易排查<br>因此，接下来进入本文的主题：构建Api Tree。</p>
+<h3 id="四、手动构建Api-Tree"><a href="#四、手动构建Api-Tree" class="headerlink" title="四、手动构建Api Tree"></a>四、手动构建Api Tree</h3><p>什么是Api Tree呢，我把它定义为将所有的api以节点的形式挂在一个树上，最后形成了一棵包含所有api的树形结构。<br>对api tree的构建初步想法（手动构建）如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 手动构建 api tree </span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">const</span> APITREE = &#123;</span><br><span class="line">  domain1: &#123;</span><br><span class="line">    api: &#123;</span><br><span class="line">      v1: &#123;</span><br><span class="line">        user: &#123;</span><br><span class="line">          getByName: <span class="string">'https://www.xxx.com/api/v1/user/getByName'</span>,</span><br><span class="line">          getByAge: <span class="string">'https://www.xxx.com/api/v1/user/getByAge'</span></span><br><span class="line">        &#125;,</span><br><span class="line">        animal: &#123;</span><br><span class="line">          getByType: <span class="string">'https://www.xxx.com/api/v1/animal/getByType'</span>,</span><br><span class="line">          getByAge: <span class="string">'https://www.xxx.com/api/v1/animal/getByAge'</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  domain2: &#123;</span><br><span class="line">    api: &#123;</span><br><span class="line">      car: &#123;</span><br><span class="line">        api1: <span class="string">'https://xxx.xxx.cn/api/car/api1'</span>,</span><br><span class="line">        api2: <span class="string">'https://xxx.xxx.cn/api/car/api2'</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  domain3: &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">export</span> &#123; APITREE &#125;;</span><br></pre></td></tr></table></figure></p>
+<p>有了api tree，我们就可以采用如下方式来从api树上摘取各个api节点的url，代码如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取url：https://www.xxx.com/api/v1/user/getByName</span></span><br><span class="line"><span class="keyword">const</span> getByNameUrl = APITREE.domain1.api.v1.user.getByName;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取url：https://xxx.xxx.cn/api/car/api1</span></span><br><span class="line"><span class="keyword">const</span> carApi1Url = APITREE.domain2.api.car.api1;</span><br></pre></td></tr></table></figure></p>
+<p>但是以上构建api tree的方式存在两个缺点：<br>1、需要在各个节点手动拼接全路径<br>2、只能摘取子节点的url：getByName和getByAge<br>     无法摘取父节点的url，比如我想获取<code>https://www.xxx.com/api/v1/user</code>，无法通过<code>APITREE.domain1.api.v1.user</code>获取<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> APITREE = &#123;</span><br><span class="line">  domain1: &#123;</span><br><span class="line">    api: &#123;</span><br><span class="line">      v1: &#123;</span><br><span class="line">        <span class="comment">// user为父节点</span></span><br><span class="line">        <span class="comment">// 缺点一：无法通过APITREE.domain1.api.v1.user获取</span></span><br><span class="line">        <span class="comment">//        https://www.xxx.com/api/v1/user</span></span><br><span class="line">        user: &#123;</span><br><span class="line">          <span class="comment">// 缺点二：在getByName和getByAge节点中手动写入全路径拼接</span></span><br><span class="line">          getByName: <span class="string">'https://www.xxx.com/api/v1/user/getByName'</span>,</span><br><span class="line">          getByAge: <span class="string">'https://www.xxx.com/api/v1/user/getByAge'</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h3 id="五、Api-Tree生成器（ApiTreeGenerator）"><a href="#五、Api-Tree生成器（ApiTreeGenerator）" class="headerlink" title="五、Api Tree生成器（ApiTreeGenerator）"></a>五、Api Tree生成器（ApiTreeGenerator）</h3><p>针对手动构建Api Tree的问题，我引入了两个概念：apiTreeConfig（基本配置）和apiTreeGenerator（生成器）。<br>通过apiTreeGenerator对apiTreeConfig进行处理，最终生成真正的apiTree。</p>
+<p>1、apiTreeConfig我把它称之为基本配置，apiTreeConfig具有一定的配置规则，要求每个节点名（除了域名）必须与api url中的每一节点名一致，因为apiTreeGenerator是根据apiTreeConfig的各个节点名进行生成，<br>api tree config配置如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * api tree config</span></span><br><span class="line"><span class="comment"> * _this可以省略不写，但是不写的话，在ts就没有语法提示</span></span><br><span class="line"><span class="comment"> * 子节点getByName,getByAge以及_this可以为任意值，因为将会被apiTreeGenerator重新赋值</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">const</span> APITREECONFIG = &#123;</span><br><span class="line">  api: &#123;</span><br><span class="line">    v1: &#123;</span><br><span class="line">      user: &#123;</span><br><span class="line">        getByName: <span class="string">''</span>,</span><br><span class="line">        getByAge: <span class="string">''</span>,</span><br><span class="line">        _this: <span class="string">''</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    _this: <span class="string">''</span></span><br><span class="line">  &#125;</span><br><span class="line"> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; APITREECONFIG &#125;;</span><br></pre></td></tr></table></figure></p>
+<p>2、apiTreeGenerator我把它称之为生成器，具有如下功能：<br>1） 遍历apiTreeConfig，处理apiTreeConfig的所有子节点，并根据该节点的所有父节点链生成完整的url，并且作为该节点的value，比如：<br>  <code>APITREECONFIG.api.v1.user.getByName</code>   -&gt;  <code>https://www.xxx.com/api/v1/user/getByName</code><br>2） 遍历apiTreeConfig，处理apiTreeConfig的所有父节点，在每个父节点中添加_this子节点指向父节点的完整url。<br>apiTreeGenerator（生成器）的代码如下：<br>（由于项目中只用到一个后端的数据，这里只实现了单域名的apiTreeGenerator，关于多域名的apiTreeGenerator，大家可以自行修改实现。）<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; APITREECONFIG &#125; <span class="keyword">from</span> <span class="string">'./api-tree.config'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> APITREE = APITREECONFIG;</span><br><span class="line"><span class="keyword">const</span> HOST_URL = <span class="string">`https://www.xxx.com`</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 为api node chain添加HOST_URL前缀</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> addHost = <span class="function">(<span class="params">apiNodeChain: string</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> apiNodeChain ? <span class="string">`<span class="subst">$&#123;HOST_URL&#125;</span>/<span class="subst">$&#123;apiNodeChain.replace(<span class="regexp">/^\//</span>, <span class="string">''</span>)&#125;</span>`</span> : HOST_URL;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据api tree config 生成 api tree：</span></span><br><span class="line"><span class="comment"> * @param apiTreeConfig api tree config</span></span><br><span class="line"><span class="comment"> * @param parentApiNodeChain parentApiNode1/parentApiNode2/parentApiNode3</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">const</span> apiTreeGenerator = <span class="function">(<span class="params">apiTreeConfig: string | object, parentApiNodeChain?: string</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">of</span> <span class="built_in">Object</span>.keys(apiTreeConfig)) &#123;</span><br><span class="line">    <span class="keyword">const</span> apiNode = key;</span><br><span class="line">    <span class="keyword">const</span> prefixChain = parentApiNodeChain ? <span class="string">`<span class="subst">$&#123;parentApiNodeChain&#125;</span>/`</span> : <span class="string">''</span>;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">Object</span>.prototype.toString.call(apiTreeConfig[key]) === <span class="string">'[object Object]'</span>) &#123;</span><br><span class="line">      apiTreeGenerator(apiTreeConfig[key], prefixChain + apiNode);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      apiTreeConfig[key] = parentApiNodeChain</span><br><span class="line">        ? addHost(prefixChain + apiTreeConfig[key])</span><br><span class="line">        : addHost(apiTreeConfig[key]);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 创建_this节点 (这里需要放在上面的for之后)</span></span><br><span class="line">  apiTreeConfig[<span class="string">'_this'</span>] = parentApiNodeChain</span><br><span class="line">    ? addHost(<span class="string">`<span class="subst">$&#123;parentApiNodeChain&#125;</span>`</span>)</span><br><span class="line">    : addHost(<span class="string">''</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">apiTreeGenerator(APITREECONFIG);</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; APITREE &#125;;</span><br></pre></td></tr></table></figure></p>
+<p>结果：<br><img src="https://upload-images.jianshu.io/upload_images/730840-25bbb5cbf838d03b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"><br>优化后的UserHttpService代码如下：<br>user.http.service.ts</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Injectable &#125; <span class="keyword">from</span> <span class="string">'@angular/core'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; HttpClient &#125; <span class="keyword">from</span> <span class="string">'@angular/common/http'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; APITREE &#125; <span class="keyword">from</span> <span class="string">'./api-tree'</span>;</span><br><span class="line"></span><br><span class="line">@Injectable()</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">UserHttpService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">constructor</span>(private http: HttpClient) &#123; &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> getUserById(userId) &#123;</span><br><span class="line">    <span class="keyword">const</span> url = APITREE.api.v1.user._this + <span class="string">'/'</span> + userId;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.http.get(url).toPromise();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> getUserByName(name) &#123;</span><br><span class="line">    <span class="keyword">const</span> url = APITREE.api.v1.user.getByName + <span class="string">'/'</span> + name;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.http.get(url).toPromise();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> getUserByAge(age) &#123;</span><br><span class="line">    <span class="keyword">const</span> url = APITREE.api.v1.user.getByAge + <span class="string">'/'</span> + age;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.http.get(url).toPromise();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="六、总结"><a href="#六、总结" class="headerlink" title="六、总结"></a>六、总结</h3><p>通过api tree，能带来如下好处：<br>1、能够通过树的形式来获取api，关键是有语法提示<br>   APITREE.api.v1.user.getByName<br>2、apiTreeConfig配置文件与后端的api接口一 一对应，方便维护<br>3、当后端修改api名时，apiTreeConfig可以很方便的进行调整</p>
+<h3 id="七、demo"><a href="#七、demo" class="headerlink" title="七、demo"></a>七、demo</h3><p><a href="https://github.com/SimpleCodeCX/myCode/tree/master/angular/api-tree" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/myCode/tree/master/angular/api-tree</a></p>
+    </div>
+  </div>
+  
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : Simple <br/>
+        
+        原文链接 : <a href="">https://simplecodecx.github.io/blog/20181223/e2c87752.html</a><br>
+        版权声明 : 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！
+        </blockquote>
+      </div>
+    </div>
+  
+  
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/前端/">
+              #前端
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/blog/20181216/a2214845.html" target="_self">关于依赖注入(typescript)</a>
+      </div>
+    
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/blog/20190224/f0110ca0.html" target="_self">webpack4 系列实践笔记(1): 最简单的webpack实例</a>
+        <i class="iconfont icon-next"></i>
+      </div>
+    
+  </nav>
+
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz", "WaR7nrzhliHj9aVwdQzkdlGd");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
+</div>
+
+
+    <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2018, 11, 16).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+    <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+  </div>
+
+  
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+  
+
+  <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+  
+</body>
+
+</html>
