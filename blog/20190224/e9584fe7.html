@@ -240,6 +240,9 @@
     <div class="markdown-body">
       </p>
 </blockquote>
+<blockquote>
+<p><code>本系列代码放在 github 上:</code> <a href="https://github.com/SimpleCodeCX/simple-webpack-demos" target="_blank" rel="noopener">webpack4系列实践代码</a><br><code>如果本系列实践教程对你有帮助,欢迎给个</code> <code>github star</code> <code>哦!</code></p>
+</blockquote>
 <h3 id="1-为什么要自动生成html"><a href="#1-为什么要自动生成html" class="headerlink" title="1.为什么要自动生成html?"></a>1.为什么要自动生成html?</h3><p>在之前的 demo 中，执行完 <code>webpack</code> 后要手动把生成的同步模块的 js 包 (或css包) 引入到html中，这样其实是比较繁琐的。</p>
 <p>尤其是在真正的项目开发中，为了对静态资源或第三方包做长缓存，我们会配置 webpack ，让其生成的每个包的文件名都自动带上该包对应的 chunkhash 值。如果文件内容有改变的话，那么该文件对应的包的 chunkhash 也会改变，这样就导致对应的 html 引用的 url 地址也需要进行相应的修改。</p>
 <p>因此，我们需要通过 webpack 插件来自动生成 html 以及自动引用相应的 js 包。</p>

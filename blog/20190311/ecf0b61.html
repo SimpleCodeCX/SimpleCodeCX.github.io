@@ -240,6 +240,9 @@
     <div class="markdown-body">
       </p>
 </blockquote>
+<blockquote>
+<p><code>本系列代码放在 github 上:</code> <a href="https://github.com/SimpleCodeCX/simple-webpack-demos" target="_blank" rel="noopener">webpack4系列实践代码</a><br><code>如果本系列实践教程对你有帮助,欢迎给个</code> <code>github star</code> <code>哦!</code></p>
+</blockquote>
 <h3 id="1-为什么要代码分离"><a href="#1-为什么要代码分离" class="headerlink" title="1.为什么要代码分离"></a>1.为什么要代码分离</h3><p>在单页面或多页面应用中，通过代码分离的方式，能够优化性能。</p>
 <p>比如把异步加载的代码分离成一个单独的chunk，等到需要调用的时候再按需加载（比如click时），这样可以减少首屏的代码体积，从而提高首屏的加载速度。</p>
 <p>另外，在我们的项目中，可能会用到很多的第三方库（比如 lodash 、rxjs 等），而往往这些第三方依赖库的代码一般很少变化，因此，很适合把第三方依赖库单独分离成一个包，并且包名包含 hash（ webpack 可以轻松做到），这样的好处在于，可以配合浏览器http的缓存机制。<br>（比如 max-age ），实现对相关资源包的长缓存，从而优化性能。</p>

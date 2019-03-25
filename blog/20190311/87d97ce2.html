@@ -240,6 +240,9 @@
     <div class="markdown-body">
       </p>
 </blockquote>
+<blockquote>
+<p><code>本系列代码放在 github 上:</code> <a href="https://github.com/SimpleCodeCX/simple-webpack-demos" target="_blank" rel="noopener">webpack4系列实践代码</a><br><code>如果本系列实践教程对你有帮助,欢迎给个</code> <code>github star</code> <code>哦!</code></p>
+</blockquote>
 <h3 id="1-什么是-tree-shaking"><a href="#1-什么是-tree-shaking" class="headerlink" title="1.什么是 tree shaking"></a>1.什么是 tree shaking</h3><p>借助于 es6 (es2015) 模块系统 (import 和 export) 的静态解析，webpack 能够利用 Tree Shaking 进行按需加载，移除掉没有被引用的模块，从而减少包的大小，缩小应用的加载时间，从而提高性能体验。</p>
 <h3 id="2-需配合-UglifyJSPlugin-来实现-tree-shaking"><a href="#2-需配合-UglifyJSPlugin-来实现-tree-shaking" class="headerlink" title="2.需配合 UglifyJSPlugin 来实现 tree shaking"></a>2.需配合 <code>UglifyJSPlugin</code> 来实现 tree shaking</h3><p><code>UglifyJSPlugin</code> 的作用在于删除未被引用代码以及压缩代码。</p>
 <p>从 webpack 4 开始，只需将 <code>&quot;mode&quot;</code> 设置为 <code>&quot;production&quot;</code> 模式，即可开启 <code>UglifyJSPlugin</code> 的功能。</p>

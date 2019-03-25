@@ -240,6 +240,9 @@
     <div class="markdown-body">
       </p>
 </blockquote>
+<blockquote>
+<p><code>本系列代码放在 github 上:</code> <a href="https://github.com/SimpleCodeCX/simple-webpack-demos" target="_blank" rel="noopener">webpack4系列实践代码</a><br><code>如果本系列实践教程对你有帮助,欢迎给个</code> <code>github star</code> <code>哦!</code></p>
+</blockquote>
 <h3 id="1-webpack-是什么？"><a href="#1-webpack-是什么？" class="headerlink" title="1.webpack 是什么？"></a>1.webpack 是什么？</h3><p>webpack 是目前 javascript 主流的工程自动构建工具，目前 Vue，React 以及 Angular 等项目脚手架都是基于 webpack 进行构建的。</p>
 <p>webpack 官方中文文档：<a href="https://www.webpackjs.com/concepts/" target="_blank" rel="noopener">https://www.webpackjs.com/concepts/</a></p>
 <p>webpack 官方英文文档：<a href="https://webpack.js.org/concepts" target="_blank" rel="noopener">https://webpack.js.org/concepts</a></p>
@@ -280,25 +283,25 @@
 <h3 id="4-关于安装webpack"><a href="#4-关于安装webpack" class="headerlink" title="4.关于安装webpack"></a>4.关于安装webpack</h3><p>3.1 首先安装 <a href="https://nodejs.org/zh-cn/download/" target="_blank" rel="noopener">nodejs</a> ,安装成功后，会自带 <a href="https://www.npmjs.com.cn/" target="_blank" rel="noopener">npm</a> 管理器</p>
 <p>3.2 安装 webpack<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g webpack webpack-cli</span><br></pre></td></tr></table></figure></p>
 <p>3.2 查看当前 webpack 版本号<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">webpack -v</span><br></pre></td></tr></table></figure></p>
-<h3 id="5-demo-list"><a href="#5-demo-list" class="headerlink" title="5.demo list"></a>5.demo list</h3><p>demo01: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo01" target="_blank" rel="noopener">最简单的 webpack 零配置实践</a></p>
-<p>demo02: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo02-config" target="_blank" rel="noopener">使用 webpack.config.js 配置文件</a></p>
-<p>demo03: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo03-js-module" target="_blank" rel="noopener">webpack 默认支持各种模块化规范</a></p>
-<p>demo04: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo04-babel7" target="_blank" rel="noopener">webpack + babel7</a></p>
-<p>demo05: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo05-ts" target="_blank" rel="noopener">webpack + typescript</a></p>
-<p>demo06: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo06-babel-ts" target="_blank" rel="noopener">webpack + babel7 + typescript</a></p>
-<p>demo07: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo07-html" target="_blank" rel="noopener">自动生成 Html 文件</a></p>
-<p>demo08: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo08-SplitChunksPlugin" target="_blank" rel="noopener">关于 SplitChunksPlugin</a></p>
-<p>demo09: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo09-split-vendor-async" target="_blank" rel="noopener">使用 SplitChunksPlugin 分离第三方依赖包以及异步包</a></p>
-<p>demo10: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo10-tree-shaking" target="_blank" rel="noopener">关于 Tree Shaking</a></p>
-<p>demo11: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo11-css" target="_blank" rel="noopener">webpack 处理 css</a></p>
-<p>demo12: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo12-scss" target="_blank" rel="noopener">webpack 处理 scss</a></p>
-<p>demo13: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo13-postcss" target="_blank" rel="noopener">webpack通过postcss-loader加工css和scss</a></p>
-<p>demo14: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo14-mini" target="_blank" rel="noopener">mini-css-extract-plugin + SplitChunksPlugin 处理 css 和 scss</a></p>
-<p>demo15: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo15-img" target="_blank" rel="noopener">webpack 处理图片</a></p>
-<p>demo16: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo16-font" target="_blank" rel="noopener">webpack 处理字体</a></p>
-<p>demo17: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo17-clean" target="_blank" rel="noopener">demo17 clean-webpack-plugin (清除模式)</a></p>
-<p>demo18: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo18-devServer" target="_blank" rel="noopener">webpack-dev-server (开发模式)</a></p>
-<p>demo19: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo19-dev-prod" target="_blank" rel="noopener">webpack 开发模式和生产模式</a></p>
+<h3 id="5-demo-list"><a href="#5-demo-list" class="headerlink" title="5.demo list"></a>5.demo list</h3><p>demo01: <a href="https://simplecodecx.github.io/blog/20190224/f0110ca0.html">最简单的 webpack 零配置实践</a></p>
+<p>demo02: <a href="https://simplecodecx.github.io/blog/20190224/9f220a6b.html">使用 webpack.config.js 配置文件</a></p>
+<p>demo03: <a href="https://simplecodecx.github.io/blog/20190224/a9943a25.html">webpack 默认支持各种模块化规范</a></p>
+<p>demo04: <a href="https://simplecodecx.github.io/blog/20190224/b77e298c.html">webpack + babel7</a></p>
+<p>demo05: <a href="https://simplecodecx.github.io/blog/20190224/808417d9.html">webpack + typescript</a></p>
+<p>demo06: <a href="https://simplecodecx.github.io/blog/20190224/4af33ce3.html">webpack + babel7 + typescript</a></p>
+<p>demo07: <a href="https://simplecodecx.github.io/blog/20190224/e9584fe7.html">自动生成 Html 文件</a></p>
+<p>demo08: <a href="https://simplecodecx.github.io/blog/20190311/ca3604dd.html">关于 SplitChunksPlugin</a></p>
+<p>demo09: <a href="https://simplecodecx.github.io/blog/20190311/ecf0b61.html">使用 SplitChunksPlugin 分离第三方依赖包以及异步包</a></p>
+<p>demo10: <a href="https://simplecodecx.github.io/blog/20190311/87d97ce2.html">关于 Tree Shaking</a></p>
+<p>demo11: <a href="https://simplecodecx.github.io/blog/20190311/28ba9e99.html">webpack 处理 css</a></p>
+<p>demo12: <a href="https://simplecodecx.github.io/blog/20190311/5bb783a3.html">webpack 处理 scss</a></p>
+<p>demo13: <a href="https://simplecodecx.github.io/blog/20190311/41443a76.html">webpack通过postcss-loader加工css和scss</a></p>
+<p>demo14: <a href="https://simplecodecx.github.io/blog/20190311/b166f567.html">mini-css-extract-plugin + SplitChunksPlugin 处理 css 和 scss</a></p>
+<p>demo15: <a href="https://simplecodecx.github.io/blog/20190311/1275f9d9.html">webpack 处理图片</a></p>
+<p>demo16: <a href="https://simplecodecx.github.io/blog/20190311/7be060d8.html">webpack 处理字体</a></p>
+<p>demo17: <a href="https://simplecodecx.github.io/blog/20190311/8515384d.html">demo17 clean-webpack-plugin (清除模式)</a></p>
+<p>demo18: <a href="https://simplecodecx.github.io/blog/20190311/f1f1f195.html">webpack-dev-server (开发模式)</a></p>
+<p>demo19: <a href="https://simplecodecx.github.io/blog/20190325/b59b574f.html">webpack 开发模式和生产模式</a></p>
     </div>
   </div>
   

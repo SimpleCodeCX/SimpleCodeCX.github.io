@@ -240,6 +240,9 @@
     <div class="markdown-body">
       </p>
 </blockquote>
+<blockquote>
+<p><code>本系列代码放在 github 上:</code> <a href="https://github.com/SimpleCodeCX/simple-webpack-demos" target="_blank" rel="noopener">webpack4系列实践代码</a><br><code>如果本系列实践教程对你有帮助,欢迎给个</code> <code>github star</code> <code>哦!</code></p>
+</blockquote>
 <h3 id="1-为什么需要自动清除-dist-文件夹"><a href="#1-为什么需要自动清除-dist-文件夹" class="headerlink" title="1.为什么需要自动清除 dist 文件夹"></a>1.为什么需要自动清除 dist 文件夹</h3><p>在之前的 demo 中，webpack 打包后会在根目录下自动创建 dist 目录，并且把生成的文件输出到 dist 下。</p>
 <p>当配置的输出包名含有 <code>[hash]</code> 时，hash值会随着文件内容的改变而改变。</p>
 <p>因此，我们需要在下一次 webpack 打包输出之前，把 dist 目录清空。</p>
