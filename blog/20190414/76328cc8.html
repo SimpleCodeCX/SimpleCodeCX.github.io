@@ -9,7 +9,7 @@
 
   <title>
     
-    归档: 2019/2 |
+    关于浏览器预检请求 |
     
     Simple的个人博客
   </title>
@@ -17,7 +17,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-  <meta name="keywords" content="Hexo, theme-bmw" />
+  <meta name="keywords" content="前端跨域,前端," />
   
 
   <script>
@@ -197,127 +197,274 @@
   })
 </script>
 
-    <div class="container">
-  <div class="timeline">
-  <span class="archive-move-on"></span>
-  <span class="archive-page-counter">
     
-      <span>Wow! 一共有 33 篇文章</span>
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>关于浏览器预检请求</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2019-04-14
+    </span>
     
-  </span>
+      <span>
+        分类 : 
+          <a href="/categories/前端跨域/">
+            前端跨域
+          </a>
+      </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="76328cc8.html"></span>
+      </span>
+    
+  </div>
+
   
+
+  <div class="article-content">
+    <div class="markdown-body">
+      </p>
+</blockquote>
+<h3 id="浏览器在什么情况下会发起options预检请求？"><a href="#浏览器在什么情况下会发起options预检请求？" class="headerlink" title="浏览器在什么情况下会发起options预检请求？"></a>浏览器在什么情况下会发起options预检请求？</h3><p>在非简单请求且跨域的情况下，浏览器会发起options预检请求。</p>
+<h3 id="关于简单请求和复杂请求："><a href="#关于简单请求和复杂请求：" class="headerlink" title="关于简单请求和复杂请求："></a>关于简单请求和复杂请求：</h3><p>1 简单请求</p>
+<p>简单请求需满足以下两个条件<br>1) 请求方法是以下三种方法之一：</p>
+<ul>
+<li>HEAD</li>
+<li>GET</li>
+<li><p>POST<br>2) HTTP 的头信息不超出以下几种字段</p>
+</li>
+<li><p>Accept</p>
+</li>
+<li>Accept-Language</li>
+<li>Content-Language</li>
+<li>Last-Event-ID</li>
+<li>Content-Type: 只限于 (application/x-www-form-urlencoded、multipart/form-data、text/plain)</li>
+</ul>
+<p>2 复杂请求</p>
+<p>非简单请求即是复杂请求</p>
+<p>常见的复杂请求有：</p>
+<p>  1) 请求方法为 PUT 或 DELETE</p>
+<p>  2) Content-Type 字段类型为 application/json</p>
+<p>  3) 添加额外的http header 比如access_token</p>
+<p>在跨域的情况下，非简单请求会先发起一次空body的OPTIONS请求，称为”预检”请求，用于向服务器请求权限信息，等预检请求被成功响应后，才发起真正的http请求。</p>
+<blockquote>
+<p>浏览器的预检请求结果可以通过设置Access-Control-Max-Age进行缓存</p>
+</blockquote>
+<h3 id="如何解决跨域问题"><a href="#如何解决跨域问题" class="headerlink" title="如何解决跨域问题"></a>如何解决跨域问题</h3><p>请看我的另一篇文章: <a href="https://simplecodecx.github.io/blog/20181209/8d45a80b.html">如何解决前端跨域问题</a></p>
+    </div>
+  </div>
   
-    <div class="collection-title">
-      <h2>
-        <span>2019</span>
-      </h2>
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : Simple <br/>
+        
+        原文链接 : <a href="">https://simplecodecx.github.io/blog/20190414/76328cc8.html</a><br>
+        版权声明 : 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！
+        </blockquote>
+      </div>
     </div>
   
   
   
-  <article class="posts-collapse">
-    <header>
-      <h2>
-        <a href="/blog/20190224/e9584fe7.html">
-          <span>webpack4 系列实践笔记(7): 自动生成 Html 文件</span>
-        </a>
-      </h2>
-      <div class="post-meta">
-        02-24
-      </div>
-    </header>
-  </article>
+
   
-  
-  <article class="posts-collapse">
-    <header>
-      <h2>
-        <a href="/blog/20190224/4af33ce3.html">
-          <span>webpack4 系列实践笔记(6): webpack + babel7 + typescript</span>
-        </a>
-      </h2>
-      <div class="post-meta">
-        02-24
-      </div>
-    </header>
-  </article>
-  
-  
-  <article class="posts-collapse">
-    <header>
-      <h2>
-        <a href="/blog/20190224/808417d9.html">
-          <span>webpack4 系列实践笔记(5): webpack + typescript</span>
-        </a>
-      </h2>
-      <div class="post-meta">
-        02-24
-      </div>
-    </header>
-  </article>
-  
-  
-  <article class="posts-collapse">
-    <header>
-      <h2>
-        <a href="/blog/20190224/b77e298c.html">
-          <span>webpack4 系列实践笔记(4): webpack + babel7</span>
-        </a>
-      </h2>
-      <div class="post-meta">
-        02-24
-      </div>
-    </header>
-  </article>
-  
-  
-  <article class="posts-collapse">
-    <header>
-      <h2>
-        <a href="/blog/20190224/a9943a25.html">
-          <span>webpack4 系列实践笔记(3): webpack默认支持各种模块化规范</span>
-        </a>
-      </h2>
-      <div class="post-meta">
-        02-24
-      </div>
-    </header>
-  </article>
-  
-  
-  <article class="posts-collapse">
-    <header>
-      <h2>
-        <a href="/blog/20190224/9f220a6b.html">
-          <span>webpack4 系列实践笔记(2): 使用webpack.config.js配置文件</span>
-        </a>
-      </h2>
-      <div class="post-meta">
-        02-24
-      </div>
-    </header>
-  </article>
-  
-  
-  <article class="posts-collapse">
-    <header>
-      <h2>
-        <a href="/blog/20190224/f0110ca0.html">
-          <span>webpack4 系列实践笔记(1): 最简单的 webpack 零配置</span>
-        </a>
-      </h2>
-      <div class="post-meta">
-        02-24
-      </div>
-    </header>
-  </article>
-  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/前端/">
+              #前端
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
 </div>
-  <nav class="page-navigation">
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
     
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/blog/20190325/720ca7f0.html" target="_self">webpack4系列实践笔记</a>
+      </div>
+    
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/blog/20190414/c9d7326.html" target="_self">基于nodejs koa2的解决跨域中间件设计</a>
+        <i class="iconfont icon-next"></i>
+      </div>
     
   </nav>
+
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz", "WaR7nrzhliHj9aVwdQzkdlGd");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
 </div>
+
 
     <footer>
   <p class="site-info">

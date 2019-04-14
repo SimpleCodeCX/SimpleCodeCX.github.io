@@ -9,7 +9,7 @@
 
   <title>
     
-    webpack4系列实践笔记 |
+    基于nodejs koa2的解决跨域中间件设计 |
     
     Simple的个人博客
   </title>
@@ -17,7 +17,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-  <meta name="keywords" content="webpack,前端构建工具," />
+  <meta name="keywords" content="nodejs,后端," />
   
 
   <script>
@@ -212,24 +212,24 @@
 
 <div class="post">
   <h1 class="article-title">
-    <span>webpack4系列实践笔记</span>
+    <span>基于nodejs koa2的解决跨域中间件设计</span>
   </h1>
   <div class="article-top-meta">
     <span>
       发布 : 
-      2019-03-25
+      2019-04-14
     </span>
     
       <span>
         分类 : 
-          <a href="/categories/webpack/">
-            webpack
+          <a href="/categories/nodejs/">
+            nodejs
           </a>
       </span>
     
     
       <span>
-        浏览 : <span class="article-timer" data-identity="720ca7f0.html"></span>
+        浏览 : <span class="article-timer" data-identity="c9d7326.html"></span>
       </span>
     
   </div>
@@ -240,68 +240,31 @@
     <div class="markdown-body">
       </p>
 </blockquote>
+<h3 id="一、解决浏览器跨域问题的方法有很多种"><a href="#一、解决浏览器跨域问题的方法有很多种" class="headerlink" title="一、解决浏览器跨域问题的方法有很多种"></a>一、解决浏览器跨域问题的方法有很多种</h3><p>1) 通过后端设置 http Access-Control-* 相关响应头<br>2) 通过 Jsonp<br>3) 通过 nginx 反向代理</p>
+<p>关于这三种解决跨域方法的介绍可以看我的另外一篇文章： <a href="https://simplecodecx.github.io/blog/20181209/8d45a80b.html">如何解决前端跨域问题</a></p>
+<p>本文主要讲基于 nodejs koa2 实现第一种跨域方案，并设计成 koa2 中间件</p>
+<h3 id="二、封装-koa2-跨域中间件"><a href="#二、封装-koa2-跨域中间件" class="headerlink" title="二、封装 koa2 跨域中间件"></a>二、封装 koa2 跨域中间件</h3><p>koa-cors.js</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> URL = <span class="built_in">require</span>(<span class="string">'url'</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="keyword">async</span> <span class="function"><span class="keyword">function</span> (<span class="params">ctx, next</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> origin = URL.parse(ctx.get(<span class="string">'origin'</span>) || ctx.get(<span class="string">'referer'</span>) || <span class="string">''</span>);</span><br><span class="line">  <span class="keyword">if</span> (origin.protocol &amp;&amp; origin.host) &#123;</span><br><span class="line">    ctx.set(<span class="string">'Access-Control-Allow-Origin'</span>, <span class="string">`<span class="subst">$&#123;origin.protocol&#125;</span>//<span class="subst">$&#123;origin.host&#125;</span>`</span>);</span><br><span class="line">    ctx.set(<span class="string">'Access-Control-Allow-Methods'</span>, <span class="string">'POST, GET, OPTIONS, DELETE, PUT'</span>);</span><br><span class="line">    ctx.set(<span class="string">'Access-Control-Allow-Headers'</span>, <span class="string">'X-Requested-With, User-Agent, Referer, Content-Type, Cache-Control,accesstoken'</span>); <span class="comment">// 添加允许 http header</span></span><br><span class="line">    ctx.set(<span class="string">'Access-Control-Max-Age'</span>, <span class="string">'86400'</span>); <span class="comment">// 设置预检结果的缓存时间</span></span><br><span class="line">    ctx.set(<span class="string">'Access-Control-Allow-Credentials'</span>, <span class="string">'true'</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (ctx.method !== <span class="string">'OPTIONS'</span>) &#123;</span><br><span class="line">    <span class="comment">// 如果请求类型为非预检请求，则进入下一个中间件（包括路由中间件等）</span></span><br><span class="line">    <span class="keyword">await</span> next();</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    ctx.body = <span class="string">''</span>;</span><br><span class="line">    ctx.status = <span class="number">204</span>; <span class="comment">// 204 http 状态码，代表空响应体</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="Access-Control-Allow-Origin："><a href="#Access-Control-Allow-Origin：" class="headerlink" title="Access-Control-Allow-Origin："></a>Access-Control-Allow-Origin：</h4><p>Access-Control-Allow-Origin 可以设置为 <code>*</code> 通配符，也可以指定具体的地址比如：<code>https://developer.mozilla.org</code>。</p>
+<p>当把 Access-Control-Allow-Origin 设置为 <code>*</code> 时，表示允许所有资源访问，但是此时不支持带 credentials 的请求，</p>
+<p>因此为了实现允许所有资源访问且支持带 credentials 的请求，将其设置为 <code>${origin.protocol}//${origin.host}</code>（即动态获取访问者地址）</p>
+<h4 id="Access-Control-Allow-Headers"><a href="#Access-Control-Allow-Headers" class="headerlink" title="Access-Control-Allow-Headers"></a>Access-Control-Allow-Headers</h4><p>默认支持 Accept、Accept-Language、Content-Language、Content-Type (只支持 application/x-www-form-urlencoded, multipart/form-data, or text/plain)。</p>
+<p>如果请求头需要添加自定义的 http header 比如 access_token ,那么需要将 access_token 添加进数组中</p>
+<h4 id="Access-Control-Allow-Credentials"><a href="#Access-Control-Allow-Credentials" class="headerlink" title="Access-Control-Allow-Credentials"></a>Access-Control-Allow-Credentials</h4><p>简单的理解就是支持 cookie</p>
+<h4 id="Access-Control-Max-Age"><a href="#Access-Control-Max-Age" class="headerlink" title="Access-Control-Max-Age"></a>Access-Control-Max-Age</h4><p>设置 OPTIONS 请求(预检请求)的返回结果的缓存时间, 单位s</p>
 <blockquote>
-<p><code>本系列代码放在 github 上:</code> <a href="https://github.com/SimpleCodeCX/simple-webpack-demos" target="_blank" rel="noopener">webpack4系列实践代码</a><br><code>如果本系列实践教程对你有帮助,欢迎给个</code> <code>github star</code> <code>哦!</code></p>
+<p>关于 OPTIONS 请求：<br>在非简单请求且跨域的情况下，浏览器会发起options预检请求。</p>
 </blockquote>
-<h3 id="1-webpack-是什么？"><a href="#1-webpack-是什么？" class="headerlink" title="1.webpack 是什么？"></a>1.webpack 是什么？</h3><p>webpack 是目前 javascript 主流的工程自动构建工具，目前 Vue，React 以及 Angular 等项目脚手架都是基于 webpack 进行构建的。</p>
-<p>webpack 官方中文文档：<a href="https://www.webpackjs.com/concepts/" target="_blank" rel="noopener">https://www.webpackjs.com/concepts/</a></p>
-<p>webpack 官方英文文档：<a href="https://webpack.js.org/concepts" target="_blank" rel="noopener">https://webpack.js.org/concepts</a></p>
-<h3 id="2-webpack-需要安装的环境"><a href="#2-webpack-需要安装的环境" class="headerlink" title="2.webpack 需要安装的环境"></a>2.webpack 需要安装的环境</h3><blockquote>
-<p>webpack 需要安装的环境有：</p>
-<ul>
-<li>webpack</li>
-<li>webpack-cli</li>
-</ul>
-</blockquote>
+<h3 id="三、使用方法"><a href="#三、使用方法" class="headerlink" title="三、使用方法"></a>三、使用方法</h3><p>app.js<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> cors = <span class="built_in">require</span>(<span class="string">'./middlewares/koa-cors'</span>);</span><br><span class="line">app.use(cors); <span class="comment">// 跨域</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="四、github-代码"><a href="#四、github-代码" class="headerlink" title="四、github 代码"></a>四、github 代码</h3><p><a href="https://github.com/SimpleCodeCX/myCode/tree/master/nodejs/koa/koa2-cors-demo" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/myCode/tree/master/nodejs/koa/koa2-cors-demo</a></p>
 <blockquote>
-<p>安装的方式有两种：</p>
+<p>备注：代码也包含了其他的中间件哦</p>
 </blockquote>
-<ul>
-<li><p>项目本地安装( <code>npm install webpack webpack-cli</code> )</p>
-<p>  运行方法: </p>
-  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.\node_modules\.bin\webpack .\index.js</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<ul>
-<li><p>全局安装( <code>npm install webpack webpack-cli -g</code> )</p>
-<p>  运行方法: </p>
-  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">webpack .\index.js</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<blockquote>
-<p>不理解本地安装和全局安装? 撸一遍npm的文档? <a href="https://www.npmjs.cn/" target="_blank" rel="noopener">https://www.npmjs.cn/</a></p>
-</blockquote>
-<p>为了避免每个demo都在本地安装一遍 webpack 和 webpack-cli ，这里推荐使用全局安装的方式。</p>
-<blockquote>
-<p>注意：有一些 webpack plugin 是依赖于 webpack 或 webpack-cli 的，比如 mini-css-extract-plugin, html-webpack-plugin 或 webpack-dev-server 等 ,这种情况需要本地安装 webpack: <code>npm install webpack</code> ,但编译环境依然可以使用全局 webpack 命令来进行编译打包（前提是你的本地 webpack 和全局的 webpack 版本兼容）。</p>
-</blockquote>
-<h3 id="3-我的webpack版本"><a href="#3-我的webpack版本" class="headerlink" title="3.我的webpack版本"></a>3.我的webpack版本</h3><p>webpack: <code>v4.29.5</code></p>
-<p>webpack-cli: <code>3.2.3</code></p>
-<blockquote>
-<p>本 webpack4 系列的实践 demo 都是基于此版本进行的</p>
-</blockquote>
-<h3 id="4-关于安装webpack"><a href="#4-关于安装webpack" class="headerlink" title="4.关于安装webpack"></a>4.关于安装webpack</h3><p>3.1 首先安装 <a href="https://nodejs.org/zh-cn/download/" target="_blank" rel="noopener">nodejs</a> ,安装成功后，会自带 <a href="https://www.npmjs.com.cn/" target="_blank" rel="noopener">npm</a> 管理器</p>
-<p>3.2 安装 webpack<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g webpack webpack-cli</span><br></pre></td></tr></table></figure></p>
-<p>3.2 查看当前 webpack 版本号<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">webpack -v</span><br></pre></td></tr></table></figure></p>
-<h3 id="5-demo-list"><a href="#5-demo-list" class="headerlink" title="5.demo list"></a>5.demo list</h3><p>demo01: <a href="https://simplecodecx.github.io/blog/20190224/f0110ca0.html">最简单的 webpack 零配置实践</a></p>
-<p>demo02: <a href="https://simplecodecx.github.io/blog/20190224/9f220a6b.html">使用 webpack.config.js 配置文件</a></p>
-<p>demo03: <a href="https://simplecodecx.github.io/blog/20190224/a9943a25.html">webpack 默认支持各种模块化规范</a></p>
-<p>demo04: <a href="https://simplecodecx.github.io/blog/20190224/b77e298c.html">webpack + babel7</a></p>
-<p>demo05: <a href="https://simplecodecx.github.io/blog/20190224/808417d9.html">webpack + typescript</a></p>
-<p>demo06: <a href="https://simplecodecx.github.io/blog/20190224/4af33ce3.html">webpack + babel7 + typescript</a></p>
-<p>demo07: <a href="https://simplecodecx.github.io/blog/20190224/e9584fe7.html">自动生成 Html 文件</a></p>
-<p>demo08: <a href="https://simplecodecx.github.io/blog/20190311/ca3604dd.html">关于 SplitChunksPlugin</a></p>
-<p>demo09: <a href="https://simplecodecx.github.io/blog/20190311/ecf0b61.html">使用 SplitChunksPlugin 分离第三方依赖包以及异步包</a></p>
-<p>demo10: <a href="https://simplecodecx.github.io/blog/20190311/87d97ce2.html">关于 Tree Shaking</a></p>
-<p>demo11: <a href="https://simplecodecx.github.io/blog/20190311/28ba9e99.html">webpack 处理 css</a></p>
-<p>demo12: <a href="https://simplecodecx.github.io/blog/20190311/5bb783a3.html">webpack 处理 scss</a></p>
-<p>demo13: <a href="https://simplecodecx.github.io/blog/20190311/41443a76.html">webpack通过postcss-loader加工css和scss</a></p>
-<p>demo14: <a href="https://simplecodecx.github.io/blog/20190311/b166f567.html">mini-css-extract-plugin + SplitChunksPlugin 处理 css 和 scss</a></p>
-<p>demo15: <a href="https://simplecodecx.github.io/blog/20190311/1275f9d9.html">webpack 处理图片</a></p>
-<p>demo16: <a href="https://simplecodecx.github.io/blog/20190311/7be060d8.html">webpack 处理字体</a></p>
-<p>demo17: <a href="https://simplecodecx.github.io/blog/20190311/8515384d.html">demo17 clean-webpack-plugin (清除模式)</a></p>
-<p>demo18: <a href="https://simplecodecx.github.io/blog/20190311/f1f1f195.html">webpack-dev-server (开发模式)</a></p>
-<p>demo19: <a href="https://simplecodecx.github.io/blog/20190325/b59b574f.html">webpack 开发模式和生产模式</a></p>
+<p>参考文档：</p>
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Allow-Headers" target="_blank" rel="noopener">Access-Control-Allow-Headers</a></p>
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Request/credentials" target="_blank" rel="noopener">credentials</a></p>
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials" target="_blank" rel="noopener">Access-Control-Allow-Credentials</a></p>
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Max-Age" target="_blank" rel="noopener">Access-Control-Max-Age</a></p>
     </div>
   </div>
   
@@ -312,7 +275,7 @@
         
           本文作者 : Simple <br/>
         
-        原文链接 : <a href="">https://simplecodecx.github.io/blog/20190325/720ca7f0.html</a><br>
+        原文链接 : <a href="">https://simplecodecx.github.io/blog/20190414/c9d7326.html</a><br>
         版权声明 : 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！
         </blockquote>
       </div>
@@ -330,8 +293,8 @@
           <i class="iconfont icon-06tags"></i>标签: 
           
           <span class="span--tag">
-            <a href="/tags/前端构建工具/">
-              #前端构建工具
+            <a href="/tags/后端/">
+              #后端
             </a>
           </span>
           
@@ -356,15 +319,9 @@
       <div class="nav-pre">
         <i class="iconfont icon-prev"></i>
         上一篇:
-        <a href="/blog/20190325/b59b574f.html" target="_self">webpack4实践笔记19-webpack开发模式和生产模式</a>
-      </div>
-    
-    
-      <div class="nav-next">
-        下一篇:
         <a href="/blog/20190414/76328cc8.html" target="_self">关于浏览器预检请求</a>
-        <i class="iconfont icon-next"></i>
       </div>
+    
     
   </nav>
 

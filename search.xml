@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[基于nodejs koa2的解决跨域中间件设计]]></title>
+    <url>%2Fblog%2F20190414%2Fc9d7326.html</url>
+    <content type="text"><![CDATA[解决浏览器跨域问题的方法有很多种1) 通过后端设置 http Access-Control-* 相关响应头2) 通过 Jsonp3) 通过 nginx 反向代理 关于这三种解决跨域方法的介绍可以看我的另外一篇文章： 如何解决前端跨域问题 本文主要讲基于 nodejs koa2 实现第一种跨域方案，并设计成 koa2 中间件 一、解决浏览器跨域问题的方法有很多种1) 通过后端设置 http Access-Control-* 相关响应头2) 通过 Jsonp3) 通过 nginx 反向代理 关于这三种解决跨域方法的介绍可以看我的另外一篇文章： 如何解决前端跨域问题 本文主要讲基于 nodejs koa2 实现第一种跨域方案，并设计成 koa2 中间件 二、封装 koa2 跨域中间件koa-cors.js 12345678910111213141516171819const URL = require('url');module.exports = async function (ctx, next) &#123; const origin = URL.parse(ctx.get('origin') || ctx.get('referer') || ''); if (origin.protocol &amp;&amp; origin.host) &#123; ctx.set('Access-Control-Allow-Origin', `$&#123;origin.protocol&#125;//$&#123;origin.host&#125;`); ctx.set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, DELETE, PUT'); ctx.set('Access-Control-Allow-Headers', 'X-Requested-With, User-Agent, Referer, Content-Type, Cache-Control,accesstoken'); // 添加允许 http header ctx.set('Access-Control-Max-Age', '86400'); // 设置预检结果的缓存时间 ctx.set('Access-Control-Allow-Credentials', 'true'); &#125; if (ctx.method !== 'OPTIONS') &#123; // 如果请求类型为非预检请求，则进入下一个中间件（包括路由中间件等） await next(); &#125; else &#123; ctx.body = ''; ctx.status = 204; // 204 http 状态码，代表空响应体 &#125;&#125;; Access-Control-Allow-Origin：Access-Control-Allow-Origin 可以设置为 * 通配符，也可以指定具体的地址比如：https://developer.mozilla.org。 当把 Access-Control-Allow-Origin 设置为 * 时，表示允许所有资源访问，但是此时不支持带 credentials 的请求， 因此为了实现允许所有资源访问且支持带 credentials 的请求，将其设置为 ${origin.protocol}//${origin.host}（即动态获取访问者地址） Access-Control-Allow-Headers默认支持 Accept、Accept-Language、Content-Language、Content-Type (只支持 application/x-www-form-urlencoded, multipart/form-data, or text/plain)。 如果请求头需要添加自定义的 http header 比如 access_token ,那么需要将 access_token 添加进数组中 Access-Control-Allow-Credentials简单的理解就是支持 cookie Access-Control-Max-Age设置 OPTIONS 请求(预检请求)的返回结果的缓存时间, 单位s 关于 OPTIONS 请求：在非简单请求且跨域的情况下，浏览器会发起options预检请求。 三、使用方法app.js12const cors = require('./middlewares/koa-cors');app.use(cors); // 跨域 四、github 代码https://github.com/SimpleCodeCX/myCode/tree/master/nodejs/koa/koa2-cors-demo 备注：代码也包含了其他的中间件哦 参考文档： Access-Control-Allow-Headers credentials Access-Control-Allow-Credentials Access-Control-Max-Age]]></content>
+      <categories>
+        <category>nodejs</category>
+      </categories>
+      <tags>
+        <tag>后端</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[关于浏览器预检请求]]></title>
+    <url>%2Fblog%2F20190414%2F76328cc8.html</url>
+    <content type="text"><![CDATA[在非简单请求且跨域的情况下，浏览器会发起options预检请求。 浏览器在什么情况下会发起options预检请求？在非简单请求且跨域的情况下，浏览器会发起options预检请求。 关于简单请求和复杂请求：1 简单请求 简单请求需满足以下两个条件1) 请求方法是以下三种方法之一： HEAD GET POST2) HTTP 的头信息不超出以下几种字段 Accept Accept-Language Content-Language Last-Event-ID Content-Type: 只限于 (application/x-www-form-urlencoded、multipart/form-data、text/plain) 2 复杂请求 非简单请求即是复杂请求 常见的复杂请求有： 1) 请求方法为 PUT 或 DELETE 2) Content-Type 字段类型为 application/json 3) 添加额外的http header 比如access_token 在跨域的情况下，非简单请求会先发起一次空body的OPTIONS请求，称为”预检”请求，用于向服务器请求权限信息，等预检请求被成功响应后，才发起真正的http请求。 浏览器的预检请求结果可以通过设置Access-Control-Max-Age进行缓存 如何解决跨域问题请看我的另一篇文章: 如何解决前端跨域问题]]></content>
+      <categories>
+        <category>前端跨域</category>
+      </categories>
+      <tags>
+        <tag>前端</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[webpack4系列实践笔记]]></title>
     <url>%2Fblog%2F20190325%2F720ca7f0.html</url>
     <content type="text"><![CDATA[webpack 是目前 javascript 主流的工程自动构建工具，目前 Vue，React 以及 Angular 等项目脚手架都是基于 webpack 进行构建的。本系列代码放在 github 上: webpack4系列实践代码 本系列代码放在 github 上: webpack4系列实践代码如果本系列实践教程对你有帮助,欢迎给个 github star 哦! 1.webpack 是什么？webpack 是目前 javascript 主流的工程自动构建工具，目前 Vue，React 以及 Angular 等项目脚手架都是基于 webpack 进行构建的。 webpack 官方中文文档：https://www.webpackjs.com/concepts/ webpack 官方英文文档：https://webpack.js.org/concepts 2.webpack 需要安装的环境 webpack 需要安装的环境有： webpack webpack-cli 安装的方式有两种： 项目本地安装( npm install webpack webpack-cli ) 运行方法: 1.\node_modules\.bin\webpack .\index.js 全局安装( npm install webpack webpack-cli -g ) 运行方法: 1webpack .\index.js 不理解本地安装和全局安装? 撸一遍npm的文档? https://www.npmjs.cn/ 为了避免每个demo都在本地安装一遍 webpack 和 webpack-cli ，这里推荐使用全局安装的方式。 注意：有一些 webpack plugin 是依赖于 webpack 或 webpack-cli 的，比如 mini-css-extract-plugin, html-webpack-plugin 或 webpack-dev-server 等 ,这种情况需要本地安装 webpack: npm install webpack ,但编译环境依然可以使用全局 webpack 命令来进行编译打包（前提是你的本地 webpack 和全局的 webpack 版本兼容）。 3.我的webpack版本webpack: v4.29.5 webpack-cli: 3.2.3 本 webpack4 系列的实践 demo 都是基于此版本进行的 4.关于安装webpack3.1 首先安装 nodejs ,安装成功后，会自带 npm 管理器 3.2 安装 webpack1npm install -g webpack webpack-cli 3.2 查看当前 webpack 版本号1webpack -v 5.demo listdemo01: 最简单的 webpack 零配置实践 demo02: 使用 webpack.config.js 配置文件 demo03: webpack 默认支持各种模块化规范 demo04: webpack + babel7 demo05: webpack + typescript demo06: webpack + babel7 + typescript demo07: 自动生成 Html 文件 demo08: 关于 SplitChunksPlugin demo09: 使用 SplitChunksPlugin 分离第三方依赖包以及异步包 demo10: 关于 Tree Shaking demo11: webpack 处理 css demo12: webpack 处理 scss demo13: webpack通过postcss-loader加工css和scss demo14: mini-css-extract-plugin + SplitChunksPlugin 处理 css 和 scss demo15: webpack 处理图片 demo16: webpack 处理字体 demo17: demo17 clean-webpack-plugin (清除模式) demo18: webpack-dev-server (开发模式) demo19: webpack 开发模式和生产模式]]></content>
