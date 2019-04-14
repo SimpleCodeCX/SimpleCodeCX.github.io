@@ -258,32 +258,32 @@
     Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
     <br>
     
+    <a href="http://www.miitbeian.gov.cn" target="_blank">粤ICP备19031481号-1</a>
   </p>
 </footer>
 
 
 
 <script>
-const timeToNowDOM = document.querySelector("#time-to-now");
-const startTimestamp = new Date(2018, 11, 16).getTime();
+  const timeToNowDOM = document.querySelector("#time-to-now");
+  const startTimestamp = new Date(, , ).getTime();
 
-const updateTimeStr = () => {
-  let offset = parseInt(
+  const updateTimeStr = () => {
+    let offset = parseInt(
       (new Date().getTime() - startTimestamp) / 1000,
       10
     ),
-    day = Math.floor(offset / 86400),
-    hour = Math.floor((offset % 86400) / 3600),
-    minute = Math.floor(((offset % 86400) % 3600) / 60),
-    second = Math.floor(((offset % 86400) % 3600) % 60);
-  timeToNowDOM.innerHTML =
-    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+      day = Math.floor(offset / 86400),
+      hour = Math.floor((offset % 86400) / 3600),
+      minute = Math.floor(((offset % 86400) % 3600) / 60),
+      second = Math.floor(((offset % 86400) % 3600) % 60);
+    timeToNowDOM.innerHTML =
+      day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+    setTimeout(updateTimeStr, 500);
+  }
+
   setTimeout(updateTimeStr, 500);
-}
-
-setTimeout(updateTimeStr, 500);
 </script>
-
 
     <div class="back-to-top hidden">
   <span>
