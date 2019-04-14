@@ -248,12 +248,12 @@
 <h4 id="Access-Control-Allow-Origin："><a href="#Access-Control-Allow-Origin：" class="headerlink" title="Access-Control-Allow-Origin："></a>Access-Control-Allow-Origin：</h4><p>Access-Control-Allow-Origin 可以设置为 <code>*</code> 通配符，也可以指定具体的地址比如：<code>https://developer.mozilla.org</code>。</p>
 <p>当把 Access-Control-Allow-Origin 设置为 <code>*</code> 时，表示允许所有资源访问，但是此时不支持带 credentials 的请求，</p>
 <p>因此为了实现允许所有资源访问且支持带 credentials 的请求，将其设置为 <code>${origin.protocol}//${origin.host}</code>（即动态获取访问者地址）</p>
-<h4 id="Access-Control-Allow-Headers"><a href="#Access-Control-Allow-Headers" class="headerlink" title="Access-Control-Allow-Headers"></a>Access-Control-Allow-Headers</h4><p>默认支持 Accept、Accept-Language、Content-Language、Content-Type (只支持 application/x-www-form-urlencoded, multipart/form-data, or text/plain)。</p>
+<h4 id="Access-Control-Allow-Headers"><a href="#Access-Control-Allow-Headers" class="headerlink" title="Access-Control-Allow-Headers"></a>Access-Control-Allow-Headers</h4><p>默认支持 Accept、Accept-Language、Content-Language、Content-Type (只支持  application/x-www-form-urlencoded, multipart/form-data, or text/plain)。</p>
 <p>如果请求头需要添加自定义的 http header 比如 access_token ,那么需要将 access_token 添加进数组中</p>
 <h4 id="Access-Control-Allow-Credentials"><a href="#Access-Control-Allow-Credentials" class="headerlink" title="Access-Control-Allow-Credentials"></a>Access-Control-Allow-Credentials</h4><p>简单的理解就是支持 cookie</p>
 <h4 id="Access-Control-Max-Age"><a href="#Access-Control-Max-Age" class="headerlink" title="Access-Control-Max-Age"></a>Access-Control-Max-Age</h4><p>设置 OPTIONS 请求(预检请求)的返回结果的缓存时间, 单位s</p>
 <blockquote>
-<p>关于 OPTIONS 请求：<br>在非简单请求且跨域的情况下，浏览器会发起options预检请求。</p>
+<p>关于 OPTIONS 请求：<br>在非简单请求且跨域的情况下，浏览器会发起 options 预检请求。<br>可以参考我的另一篇文章：<a href="https://simplecodecx.github.io/blog/20190414/76328cc8.html">关于浏览器预检请求</a></p>
 </blockquote>
 <h3 id="三、使用方法"><a href="#三、使用方法" class="headerlink" title="三、使用方法"></a>三、使用方法</h3><p>app.js<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> cors = <span class="built_in">require</span>(<span class="string">'./middlewares/koa-cors'</span>);</span><br><span class="line">app.use(cors); <span class="comment">// 跨域</span></span><br></pre></td></tr></table></figure></p>
 <h3 id="四、github-代码"><a href="#四、github-代码" class="headerlink" title="四、github 代码"></a>四、github 代码</h3><p><a href="https://github.com/SimpleCodeCX/myCode/tree/master/nodejs/koa/koa2-cors-demo" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/myCode/tree/master/nodejs/koa/koa2-cors-demo</a></p>
