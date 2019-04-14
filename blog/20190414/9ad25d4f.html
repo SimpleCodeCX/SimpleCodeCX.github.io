@@ -9,7 +9,7 @@
 
   <title>
     
-    基于nodejs koa2的解决跨域中间件设计 |
+    自动定时备份 mysql 数据库 的 shell 脚本 |
     
     Simple的个人博客
   </title>
@@ -212,7 +212,7 @@
 
 <div class="post">
   <h1 class="article-title">
-    <span>基于nodejs koa2的解决跨域中间件设计</span>
+    <span>自动定时备份 mysql 数据库 的 shell 脚本</span>
   </h1>
   <div class="article-top-meta">
     <span>
@@ -229,7 +229,7 @@
     
     
       <span>
-        浏览 : <span class="article-timer" data-identity="c9d7326.html"></span>
+        浏览 : <span class="article-timer" data-identity="9ad25d4f.html"></span>
       </span>
     
   </div>
@@ -240,31 +240,13 @@
     <div class="markdown-body">
       </p>
 </blockquote>
-<h3 id="一、解决浏览器跨域问题的方法有很多种"><a href="#一、解决浏览器跨域问题的方法有很多种" class="headerlink" title="一、解决浏览器跨域问题的方法有很多种"></a>一、解决浏览器跨域问题的方法有很多种</h3><p>1) 通过后端设置 http Access-Control-* 相关响应头<br>2) 通过 Jsonp<br>3) 通过 nginx 反向代理</p>
-<p>关于这三种解决跨域方法的介绍可以看我的另外一篇文章： <a href="https://simplecodecx.github.io/blog/20181209/8d45a80b.html">如何解决前端跨域问题</a></p>
-<p>本文主要讲基于 nodejs koa2 实现第一种跨域方案，并设计成 koa2 中间件</p>
-<h3 id="二、封装-koa2-跨域中间件"><a href="#二、封装-koa2-跨域中间件" class="headerlink" title="二、封装 koa2 跨域中间件"></a>二、封装 koa2 跨域中间件</h3><p>koa-cors.js</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> URL = <span class="built_in">require</span>(<span class="string">'url'</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="keyword">async</span> <span class="function"><span class="keyword">function</span> (<span class="params">ctx, next</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> origin = URL.parse(ctx.get(<span class="string">'origin'</span>) || ctx.get(<span class="string">'referer'</span>) || <span class="string">''</span>);</span><br><span class="line">  <span class="keyword">if</span> (origin.protocol &amp;&amp; origin.host) &#123;</span><br><span class="line">    ctx.set(<span class="string">'Access-Control-Allow-Origin'</span>, <span class="string">`<span class="subst">$&#123;origin.protocol&#125;</span>//<span class="subst">$&#123;origin.host&#125;</span>`</span>);</span><br><span class="line">    ctx.set(<span class="string">'Access-Control-Allow-Methods'</span>, <span class="string">'POST, GET, OPTIONS, DELETE, PUT'</span>);</span><br><span class="line">    ctx.set(<span class="string">'Access-Control-Allow-Headers'</span>, <span class="string">'X-Requested-With, User-Agent, Referer, Content-Type, Cache-Control,accesstoken'</span>); <span class="comment">// 添加允许 http header</span></span><br><span class="line">    ctx.set(<span class="string">'Access-Control-Max-Age'</span>, <span class="string">'86400'</span>); <span class="comment">// 设置预检结果的缓存时间</span></span><br><span class="line">    ctx.set(<span class="string">'Access-Control-Allow-Credentials'</span>, <span class="string">'true'</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (ctx.method !== <span class="string">'OPTIONS'</span>) &#123;</span><br><span class="line">    <span class="comment">// 如果请求类型为非预检请求，则进入下一个中间件（包括路由中间件等）</span></span><br><span class="line">    <span class="keyword">await</span> next();</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    ctx.body = <span class="string">''</span>;</span><br><span class="line">    ctx.status = <span class="number">204</span>; <span class="comment">// 204 http 状态码，代表空响应体</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h4 id="Access-Control-Allow-Origin："><a href="#Access-Control-Allow-Origin：" class="headerlink" title="Access-Control-Allow-Origin："></a>Access-Control-Allow-Origin：</h4><p>Access-Control-Allow-Origin 可以设置为 <code>*</code> 通配符，也可以指定具体的地址比如：<code>https://developer.mozilla.org</code>。</p>
-<p>当把 Access-Control-Allow-Origin 设置为 <code>*</code> 时，表示允许所有资源访问，但是此时不支持带 credentials 的请求，</p>
-<p>因此为了实现允许所有资源访问且支持带 credentials 的请求，将其设置为 <code>${origin.protocol}//${origin.host}</code>（即动态获取访问者地址）</p>
-<h4 id="Access-Control-Allow-Headers"><a href="#Access-Control-Allow-Headers" class="headerlink" title="Access-Control-Allow-Headers"></a>Access-Control-Allow-Headers</h4><p>默认支持 Accept、Accept-Language、Content-Language、Content-Type (只支持  application/x-www-form-urlencoded, multipart/form-data, or text/plain)。</p>
-<p>如果请求头需要添加自定义的 http header 比如 access_token ,那么需要将 access_token 添加进数组中</p>
-<h4 id="Access-Control-Allow-Credentials"><a href="#Access-Control-Allow-Credentials" class="headerlink" title="Access-Control-Allow-Credentials"></a>Access-Control-Allow-Credentials</h4><p>简单的理解就是支持 cookie</p>
-<h4 id="Access-Control-Max-Age"><a href="#Access-Control-Max-Age" class="headerlink" title="Access-Control-Max-Age"></a>Access-Control-Max-Age</h4><p>设置 OPTIONS 请求(预检请求)的返回结果的缓存时间, 单位s</p>
+<h3 id="一、前颜"><a href="#一、前颜" class="headerlink" title="一、前颜"></a>一、前颜</h3><p>通过 mysqldump 和 crontab 实现自动 mysql 数据库</p>
+<h3 id="二、备份数据库的脚本如下"><a href="#二、备份数据库的脚本如下" class="headerlink" title="二、备份数据库的脚本如下"></a>二、备份数据库的脚本如下</h3><p>backMysql.sh<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">PATH=<span class="regexp">/bin:/</span>sbin:<span class="regexp">/usr/</span>bin:<span class="regexp">/usr/</span>sbin:<span class="regexp">/usr/</span>local/bin:<span class="regexp">/usr/</span>local/sbin</span><br><span class="line"><span class="keyword">export</span> PATH</span><br><span class="line"></span><br><span class="line">#数据库ip</span><br><span class="line">DBHOST=<span class="string">'xxx.xxx.xxx.xxx'</span> <span class="comment">// your db host</span></span><br><span class="line">#数据库用户名</span><br><span class="line">DBUSER=<span class="string">'admin'</span> <span class="comment">// 数据库用户名</span></span><br><span class="line">#数据库用密码</span><br><span class="line">DBPASSWD=<span class="string">'password'</span> <span class="comment">// 数据库用户名对应的密码</span></span><br><span class="line">#需要备份的数据库，多个数据库用空格分开</span><br><span class="line">DBNAME=<span class="string">'dbname'</span> <span class="comment">// 数据库名</span></span><br><span class="line"></span><br><span class="line">#备份时间</span><br><span class="line">backtime=<span class="string">`date +%Y-%m-%d_%H%M%S`</span></span><br><span class="line">#备份路径（当前目录）</span><br><span class="line">BACKPATH=$(dirname $(readlink -f $<span class="number">0</span>))</span><br><span class="line">echo $BACKPATH</span><br><span class="line">#日志备份路径</span><br><span class="line">LOGPATH=<span class="string">"$&#123;BACKPATH&#125;/log"</span></span><br><span class="line">#数据备份路径</span><br><span class="line">DBPATH=<span class="string">"$&#123;BACKPATH&#125;/db"</span></span><br><span class="line"></span><br><span class="line">#创建备份目录</span><br><span class="line">[ ! -d <span class="string">"$&#123;LOGPATH&#125;"</span> ] &amp;&amp; mkdir -p <span class="string">"$&#123;LOGPATH&#125;"</span></span><br><span class="line">[ ! -d <span class="string">"$&#123;DBPATH&#125;"</span> ] &amp;&amp; mkdir -p <span class="string">"$&#123;DBPATH&#125;"</span></span><br><span class="line"></span><br><span class="line">#日志记录头部</span><br><span class="line">echo <span class="string">"备份时间为$&#123;backtime&#125;,备份数据库表 $&#123;DBNAME&#125; 开始"</span> &gt;&gt; $&#123;LOGPATH&#125;/mysqlback.log</span><br><span class="line"></span><br><span class="line">#正式备份数据库</span><br><span class="line"><span class="keyword">for</span> table <span class="keyword">in</span> $DBNAME; <span class="keyword">do</span></span><br><span class="line">source=<span class="string">`mysqldump -u <span class="subst">$&#123;DBUSER&#125;</span> -h<span class="subst">$&#123;DBHOST&#125;</span> -p<span class="subst">$&#123;DBPASSWD&#125;</span> <span class="subst">$&#123;table&#125;</span>&gt; <span class="subst">$&#123;LOGPATH&#125;</span>/<span class="subst">$&#123;backtime&#125;</span>.sql`</span> <span class="number">2</span>&gt;&gt; $&#123;LOGPATH&#125;/mysqlback.log;</span><br><span class="line"></span><br><span class="line">#备份成功以下操作 $?获取上一个命令的操作结果，0代表成功</span><br><span class="line"><span class="keyword">if</span> [ <span class="string">"$?"</span> == <span class="number">0</span> ];then</span><br><span class="line">cd $&#123;LOGPATH&#125;</span><br><span class="line">#为节约硬盘空间，将数据库压缩</span><br><span class="line">tar -czf $&#123;DBPATH&#125;/$&#123;table&#125;$&#123;backtime&#125;.tar.gz ./$&#123;backtime&#125;.sql &gt; <span class="regexp">/dev/</span><span class="literal">null</span></span><br><span class="line">#删除原始文件，只留压缩后文件</span><br><span class="line">rm -f $&#123;LOGPATH&#125;/$&#123;backtime&#125;.sql</span><br><span class="line">#删除七天前备份，也就是只保存7天内的备份</span><br><span class="line">find $DBPATH -name <span class="string">"*.tar.gz"</span> -type f -mtime +<span class="number">7</span> -exec rm -rf &#123;&#125; \; &gt; <span class="regexp">/dev/</span><span class="literal">null</span> <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line">echo <span class="string">"数据库表 $&#123;DBNAME&#125; 备份成功!!"</span> &gt;&gt; $&#123;LOGPATH&#125;/mysqlback.log</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">#备份失败则进行以下操作</span><br><span class="line">echo <span class="string">"数据库表 $&#123;DBNAME&#125; 备份失败!!"</span> &gt;&gt; $&#123;LOGPATH&#125;/mysqlback.log</span><br><span class="line">fi</span><br><span class="line">done</span><br></pre></td></tr></table></figure></p>
+<h3 id="三、定时备份"><a href="#三、定时备份" class="headerlink" title="三、定时备份"></a>三、定时备份</h3><p>通过 crontab 定时执行 <code>backMysql.sh</code> 脚本，配置每个小时备份一次，步骤如下：</p>
+<p>1) 运行 crontab -e<br>2) 输入 0 <em> </em> <em> </em> /home/admin/dbBackup/backMysql.sh</p>
 <blockquote>
-<p>关于 OPTIONS 请求：<br>在非简单请求且跨域的情况下，浏览器会发起 options 预检请求。<br>可以参考我的另一篇文章：<a href="https://simplecodecx.github.io/blog/20190414/76328cc8.html">关于浏览器预检请求</a></p>
+<p>以上实现每个小时整点备份一次，关于 crontab 的用法，可以查看相关资料</p>
 </blockquote>
-<h3 id="三、使用方法"><a href="#三、使用方法" class="headerlink" title="三、使用方法"></a>三、使用方法</h3><p>app.js<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> cors = <span class="built_in">require</span>(<span class="string">'./middlewares/koa-cors'</span>);</span><br><span class="line">app.use(cors); <span class="comment">// 跨域</span></span><br></pre></td></tr></table></figure></p>
-<h3 id="四、github-代码"><a href="#四、github-代码" class="headerlink" title="四、github 代码"></a>四、github 代码</h3><p><a href="https://github.com/SimpleCodeCX/myCode/tree/master/nodejs/koa/koa2-cors-demo" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/myCode/tree/master/nodejs/koa/koa2-cors-demo</a></p>
-<blockquote>
-<p>备注：代码也包含了其他的中间件哦</p>
-</blockquote>
-<p>参考文档：</p>
-<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Allow-Headers" target="_blank" rel="noopener">Access-Control-Allow-Headers</a></p>
-<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/API/Request/credentials" target="_blank" rel="noopener">credentials</a></p>
-<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials" target="_blank" rel="noopener">Access-Control-Allow-Credentials</a></p>
-<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Access-Control-Max-Age" target="_blank" rel="noopener">Access-Control-Max-Age</a></p>
     </div>
   </div>
   
@@ -275,7 +257,7 @@
         
           本文作者 : Simple <br/>
         
-        原文链接 : <a href="">https://simplecodecx.github.io/blog/20190414/c9d7326.html</a><br>
+        原文链接 : <a href="">https://simplecodecx.github.io/blog/20190414/9ad25d4f.html</a><br>
         版权声明 : 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！
         </blockquote>
       </div>
@@ -319,15 +301,9 @@
       <div class="nav-pre">
         <i class="iconfont icon-prev"></i>
         上一篇:
-        <a href="/blog/20190414/76328cc8.html" target="_self">关于浏览器预检请求</a>
+        <a href="/blog/20190414/c9d7326.html" target="_self">基于nodejs koa2的解决跨域中间件设计</a>
       </div>
     
-    
-      <div class="nav-next">
-        下一篇:
-        <a href="/blog/20190414/9ad25d4f.html" target="_self">自动定时备份 mysql 数据库 的 shell 脚本</a>
-        <i class="iconfont icon-next"></i>
-      </div>
     
   </nav>
 
