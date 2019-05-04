@@ -279,6 +279,7 @@
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">webpack</span><br></pre></td></tr></table></figure>
 <h3 id="7-验证打包结果"><a href="#7-验证打包结果" class="headerlink" title="7.验证打包结果"></a>7.验证打包结果</h3><p>在 dist 文件夹中包含 index.html , 并自动引用相应的 js 包。<br>输出结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1.bundle.js</span><br><span class="line">app.bundle.js</span><br><span class="line">index.html</span><br></pre></td></tr></table></figure></p>
+<h3 id="8-源码地址"><a href="#8-源码地址" class="headerlink" title="8.源码地址"></a>8.源码地址</h3><p>demo 代码地址: <a href="https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo07-html" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/simple-webpack-demos/tree/master/demo07-html</a><br>仓库代码地址(及目录): <a href="https://github.com/SimpleCodeCX/simple-webpack-demos" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/simple-webpack-demos</a></p>
     </div>
   </div>
   
@@ -345,13 +346,33 @@
     
   </nav>
 
+  
+    <a href="#comment" class="comment-anchor"></a>
+<div class="comment-title"><i class="iconfont icon-footprint"></i> 留下足迹 <i class="iconfont icon-footprint"></i></div>
+<div id="vcomments"></div>
+
+<script defer>
+  if( true ) {
+    let path = getRealPath()
+    new Valine({
+      el: "#vcomments",
+      appId: "NBVBu5udttyakQLndVdiLdJp-gzGzoHsz",
+      appKey: "wwjYbDQ5B5IqDqtjfFwXn6I7",
+      notify: false,
+      verify: false,
+      avatar: "robohash",
+      placeholder: "正确填写邮箱, 才能及时收到回复哦♪(^∇^*)",
+      path
+    });
+  }
+</script>
    
 
   
     <script defer>
 const valineAPI = (() => {
   try {
-    AV.init("Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz", "WaR7nrzhliHj9aVwdQzkdlGd");
+    AV.init("NBVBu5udttyakQLndVdiLdJp-gzGzoHsz", "wwjYbDQ5B5IqDqtjfFwXn6I7");
   } catch(error) {}
   const isExist = (identity) => {
     identity = identity || getRealPath();

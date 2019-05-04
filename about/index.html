@@ -209,6 +209,26 @@
       <h1 id="关于我"><a href="#关于我" class="headerlink" title="关于我"></a>关于我</h1><!-- > 目前从事前端开发，擅长Angular以及koa2 -->
     </div>
     
+    
+      <a href="#comment" class="comment-anchor"></a>
+<div class="comment-title"><i class="iconfont icon-footprint"></i> 留下足迹 <i class="iconfont icon-footprint"></i></div>
+<div id="vcomments"></div>
+
+<script defer>
+  if( true ) {
+    let path = getRealPath()
+    new Valine({
+      el: "#vcomments",
+      appId: "NBVBu5udttyakQLndVdiLdJp-gzGzoHsz",
+      appKey: "wwjYbDQ5B5IqDqtjfFwXn6I7",
+      notify: false,
+      verify: false,
+      avatar: "robohash",
+      placeholder: "正确填写邮箱, 才能及时收到回复哦♪(^∇^*)",
+      path
+    });
+  }
+</script>
      
   </div>
 
