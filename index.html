@@ -200,6 +200,86 @@
   
   <div class="post">
     <h1 class="article-title">
+      <a href="/blog/20190825/2c3ab5b6.html">
+        <span>关于 == 和 ===的区别</span>
+      </a>
+    </h1>
+    <!-- PC端文章信息 -->
+    <div class="article-top-meta pc-view">
+      <span>
+        发布时间 : 2019-08-25
+      </span>
+    </div>
+    <!-- 移动端文章信息 -->
+    <div class="article-top-meta mobile-view">
+      <span>
+        发布 : 2019-08-25
+      </span>
+      
+        <span>
+        分类 :
+          <a href="/categories/javascript/">
+            javascript
+          </a>
+        </span>
+      
+      
+        <span>
+          浏览 : <span class="article-timer" data-identity="2c3ab5b6.html"></span>
+        </span>
+      
+    </div>
+    
+    <!-- 文章简介 -->
+    <div class="article-content">
+      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
+        <blockquote>
+<p>== 的判断规则<br>1、同类型比较，进行 === 比较<br>2、如果两个值类型不同，则根据如下规则进行类型转换再进行比较：</p>
+<ul>
+<li>1）如果一个是字符换，一个是数字，则将字符串转换成数字，再进行值比较</li>
+<li>2）如果任一值是 true，把它转换成 1 再比较；如果任一值是 false，把它转换成 0 再比较。</li>
+<li>3）如果一个是对象，另一个是基础类型(数值或字符串)，则把对象转换成基础类型的值再比较。</li>
+<li>对象转换成基础类型，利用它的 toString 或者 valueOf 方法。</li>
+<li>4）高级类型与高级类型，进行指针地址比较</li>
+<li>5）如果一个是null，一个是undefined，那么相等
+      </div>
+    </div>
+    <div class="article-footer">
+      <div class="article-meta pull-left">
+        <!-- 分类pc端可见 -->
+        <span class="pc-view">
+          
+            <i class="iconfont icon-tag"></i>分类:
+            <a href="/categories/javascript/">
+              javascript
+            </a>
+          </span>
+          
+        <span>
+          
+            <i class="iconfont icon-06tags"></i>标签:
+            
+              <span class="span--tag">
+                <a href="/tags/前端/">
+                  #前端
+                </a>
+              </span>
+            
+                    
+        </span>
+      </div>
+      
+        <div class="article-meta pull-right">
+          <span class="pc-view">
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="2c3ab5b6.html"></span>
+          </span>
+        </div>
+      
+    </div>
+  </div>
+  
+  <div class="post">
+    <h1 class="article-title">
       <a href="/blog/20190414/9ad25d4f.html">
         <span>自动定时备份 mysql 数据库 的 shell 脚本</span>
       </a>
@@ -857,79 +937,6 @@
     </div>
   </div>
   
-  <div class="post">
-    <h1 class="article-title">
-      <a href="/blog/20190311/b166f567.html">
-        <span>webpack4实践笔记14 mini-css-extract-plugin + SplitChunksPlugin 处理 css 和 scss</span>
-      </a>
-    </h1>
-    <!-- PC端文章信息 -->
-    <div class="article-top-meta pc-view">
-      <span>
-        发布时间 : 2019-03-11
-      </span>
-    </div>
-    <!-- 移动端文章信息 -->
-    <div class="article-top-meta mobile-view">
-      <span>
-        发布 : 2019-03-11
-      </span>
-      
-        <span>
-        分类 :
-          <a href="/categories/webpack/">
-            webpack
-          </a>
-        </span>
-      
-      
-        <span>
-          浏览 : <span class="article-timer" data-identity="b166f567.html"></span>
-        </span>
-      
-    </div>
-    
-    <!-- 文章简介 -->
-    <div class="article-content">
-      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
-        <blockquote>
-<p>虽然webpack4不支持 <code>ExtractTextWebpackPlugin</code> 插件，但是我们可以使用 <code>mini-css-extract-plugin</code> 来实现把 css 提取为单独的文件。<br>
-      </div>
-    </div>
-    <div class="article-footer">
-      <div class="article-meta pull-left">
-        <!-- 分类pc端可见 -->
-        <span class="pc-view">
-          
-            <i class="iconfont icon-tag"></i>分类:
-            <a href="/categories/webpack/">
-              webpack
-            </a>
-          </span>
-          
-        <span>
-          
-            <i class="iconfont icon-06tags"></i>标签:
-            
-              <span class="span--tag">
-                <a href="/tags/前端构建工具/">
-                  #前端构建工具
-                </a>
-              </span>
-            
-                    
-        </span>
-      </div>
-      
-        <div class="article-meta pull-right">
-          <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="b166f567.html"></span>
-          </span>
-        </div>
-      
-    </div>
-  </div>
-  
 
   <nav class="page-navigation">
     
@@ -1076,6 +1083,9 @@ if(true){
     Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
     <br>
     
+    <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44133002100143" target="_blank">粤公网安备
+      44133002100143号</a>
+
     <a href="http://www.miitbeian.gov.cn" target="_blank">粤ICP备19031481号-1</a>
   </p>
 </footer>
