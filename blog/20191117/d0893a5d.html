@@ -9,7 +9,7 @@
 
   <title>
     
-    手写一个 koa-ts-cli 脚手架(英文版) |
+    手写一个 koa-ts-cli 脚手架(中文版) |
     
     Simple的个人博客
   </title>
@@ -212,12 +212,12 @@
 
 <div class="post">
   <h1 class="article-title">
-    <span>手写一个 koa-ts-cli 脚手架(英文版)</span>
+    <span>手写一个 koa-ts-cli 脚手架(中文版)</span>
   </h1>
   <div class="article-top-meta">
     <span>
       发布 : 
-      2019-11-13
+      2019-11-17
     </span>
     
       <span>
@@ -229,7 +229,7 @@
     
     
       <span>
-        浏览 : <span class="article-timer" data-identity="9d06116e.html"></span>
+        浏览 : <span class="article-timer" data-identity="d0893a5d.html"></span>
       </span>
     
   </div>
@@ -240,26 +240,40 @@
     <div class="markdown-body">
       </p>
 </blockquote>
-<h1 id="koa-ts-cli"><a href="#koa-ts-cli" class="headerlink" title="koa-ts-cli"></a>koa-ts-cli</h1><p>A simple CLI for create koa + ts project: <code>koats create myProject</code>.</p>
-<h2 id="Templates"><a href="#Templates" class="headerlink" title="Templates"></a>Templates</h2><p>Koats provide three templates that are all based on ts.</p>
+<h2 id="1、koa-ts-cli"><a href="#1、koa-ts-cli" class="headerlink" title="1、koa-ts-cli"></a>1、<a href="https://www.npmjs.com/package/koa-ts-cli" target="_blank" rel="noopener">koa-ts-cli</a></h2><p>最近把公司的 nodejs koa 后端项目用 ts 重构一遍。</p>
+<p>在搭建整个工程，比如集成 koa、typescript、jest 以及 eslint 的过程中，还是会遇到挺多配置性的问题的。</p>
+<p>考虑到工程的复用性，我写了一个 <a href="https://www.npmjs.com/package/koa-ts-cli" target="_blank" rel="noopener">koa-ts-cli</a> 脚手架，并且提供了三个工程模板：基本模板(<a href="https://github.com/SimpleCodeCX/koa-ts-base-template" target="_blank" rel="noopener">koa-ts-base-template</a>)、完整模板(<a href="https://github.com/SimpleCodeCX/koa-ts-full-template" target="_blank" rel="noopener">koa-ts-full-template</a>)、全栈模板(<a href="https://github.com/SimpleCodeCX/koa-ts-full-stack-server" target="_blank" rel="noopener">koa-ts-full-stack-template</a>)。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">npm i -g koa-ts-cli</span><br><span class="line">koats create myProject</span><br><span class="line"> # Choose your favorite template.</span><br><span class="line"> </span><br><span class="line"> cd myProject</span><br><span class="line"> npm install</span><br></pre></td></tr></table></figure>
+<p>github 地址：<a href="https://github.com/SimpleCodeCX/koa-ts-cli" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/koa-ts-cli</a></p>
+<p>npm 包地址：<a href="https://www.npmjs.com/package/koa-ts-cli" target="_blank" rel="noopener">https://www.npmjs.com/package/koa-ts-cli</a></p>
+<blockquote>
+<p>注意：不同模板的运行方式可能略有不同，具体可以看各个模板的文档</p>
+</blockquote>
+<h2 id="2、模板的选择-Templates"><a href="#2、模板的选择-Templates" class="headerlink" title="2、模板的选择(Templates)"></a>2、模板的选择(Templates)</h2><p>koats 提供了三个基于 ts 的模板。</p>
 <ul>
 <li><p><a href="https://github.com/SimpleCodeCX/koa-ts-base-template" target="_blank" rel="noopener">koa-ts-base-template</a></p>
-<p>This is a basic of koa project structure, integrated with ts. If you want to custom the structure of the project, this template is for you</p>
+<p>这是一个干净的 koa + ts + jest + eslint + apidoc + docker 工程模板，实现了最基本的 koa 中间件和配置等，如果你只需要一个基本的 koa + ts 工程配置，这个模板适合你。</p>
+<p>模板地址: <a href="https://github.com/SimpleCodeCX/koa-ts-base-template" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/koa-ts-base-template</a></p>
 </li>
 <li><p><a href="https://github.com/SimpleCodeCX/koa-ts-full-template" target="_blank" rel="noopener">koa-ts-full-template</a></p>
-<p>This is a full project structure, integrated with ts.This project has been configured with a mysql database, support different environment(local,dev,prod) configuration, some custom koa middleware have configured, and it has been the definition of a unified api response format.</p>
+<p>  这是一个比较完整的 koa + ts 工程结构，在 koa-ts-base-template 的基础上，增加了如下功能:<br>  1) 集成了 mysql 数据库<br>  2) 支持不同的开发环境配置: 开发环境(development)、正式环境(production)、测试环境(testing)<br>  3) 定义了统一的接口响应规范<br>  4) 定义了统一接口出错处理的中间件</p>
 </li>
-<li><p><a href="https://github.com/SimpleCodeCX/koa-ts-full-stack-server" target="_blank" rel="noopener">koa-ts-full-stack-template</a></p>
-<p>This is a full-stack project structure based on koa-ts-full-template.</p>
-<p>It contains three parts: </p>
+</ul>
+<p>   模板地址： <a href="https://github.com/SimpleCodeCX/koa-ts-full-template" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/koa-ts-full-template</a></p>
 <ul>
-<li>client: This directory is the front-end code.</li>
-<li>server: This directory is the back-end code.</li>
-<li>common: This directory is the common code for front-end and back-end.</li>
+<li><p><a href="https://github.com/SimpleCodeCX/koa-ts-full-stack-server" target="_blank" rel="noopener">koa-ts-full-stack-template</a></p>
+<p>  这是一个全栈的 koa + ts 工程结构，在 koa-ts-full-template 的基础上，修改了一些工程配置，从而实现多工程的编译。</p>
+<p>  此工程包含三个端：</p>
+<ul>
+<li>client：用于放前端代码</li>
+<li>server：用于放后端代码</li>
+<li><p>common：用于放前端和后端公共的代码，比如每个接口的参数类型、以及每个接口的响应类型</p>
+<p>模板地址： <a href="https://github.com/SimpleCodeCX/koa-ts-full-stack-server" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/koa-ts-full-stack-server</a></p>
+</li>
 </ul>
 </li>
 </ul>
-<p>This three template has the following three common features.</p>
+<h2 id="3、共同特点"><a href="#3、共同特点" class="headerlink" title="3、共同特点"></a>3、共同特点</h2><p>这三个模板的共同特点：</p>
 <p>✓ <a href="https://github.com/koajs/koa" target="_blank" rel="noopener">koa v2</a></p>
 <p>✓ <a href="https://github.com/koajs/koa" target="_blank" rel="noopener">Typescript</a></p>
 <p>✓ <a href="https://github.com/facebook/jest" target="_blank" rel="noopener">Jest</a></p>
@@ -267,18 +281,22 @@
 <p>✓ <a href="https://www.docker.com/" target="_blank" rel="noopener">Docker</a></p>
 <p>✓ <a href="https://github.com/eslint/eslint" target="_blank" rel="noopener">Eslint</a></p>
 <p>✓ <a href="https://github.com/typicode/husky" target="_blank" rel="noopener">Husky</a></p>
-<h2 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i -g koa-ts-cli</span><br></pre></td></tr></table></figure>
-<h2 id="Create-Project"><a href="#Create-Project" class="headerlink" title="Create Project"></a>Create Project</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">koats create myProject</span><br><span class="line"># Choose your favorite template.</span><br><span class="line"></span><br><span class="line">cd myProject</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure>
-<h2 id="In-development-mode"><a href="#In-development-mode" class="headerlink" title="In development mode"></a>In development mode</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd myProject</span><br><span class="line">npm run dev</span><br></pre></td></tr></table></figure>
+<h2 id="4、安装-koa-ts-cli"><a href="#4、安装-koa-ts-cli" class="headerlink" title="4、安装 koa-ts-cli"></a>4、安装 koa-ts-cli</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i -g koa-ts-cli</span><br></pre></td></tr></table></figure>
+<h2 id="5、创建项目"><a href="#5、创建项目" class="headerlink" title="5、创建项目"></a>5、创建项目</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">koats create myProject</span><br><span class="line"># Choose your favorite template.</span><br><span class="line"></span><br><span class="line">cd myProject</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure>
+<h2 id="6、开发模式"><a href="#6、开发模式" class="headerlink" title="6、开发模式"></a>6、开发模式</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd myProject</span><br><span class="line">npm run dev</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>NOTE: If you choose koa-ts-full-template or koa-ts-full-stack-template, you need to do some configuration.</p>
+<p>注意：不同模板的运行方式可能略有不同，具体可以看各个模板的文档</p>
 </blockquote>
-<h2 id="In-porduction-mode"><a href="#In-porduction-mode" class="headerlink" title="In porduction mode"></a>In porduction mode</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm run build</span><br><span class="line">cd myProject/dist</span><br><span class="line">npm run prod</span><br></pre></td></tr></table></figure>
+<h2 id="7、发布模式"><a href="#7、发布模式" class="headerlink" title="7、发布模式"></a>7、发布模式</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm run build</span><br><span class="line">cd myProject/dist</span><br><span class="line">npm run prod</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>NOTE: If you choose koa-ts-full-template or koa-ts-full-stack-template, you need to do some configuration.</p>
+<p>注意：不同模板的运行方式可能略有不同，具体可以看各个模板的文档</p>
 </blockquote>
-<h2 id="Run-in-docker"><a href="#Run-in-docker" class="headerlink" title="Run in docker"></a>Run in docker</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd myProject</span><br><span class="line">npm install</span><br><span class="line">npm run build</span><br><span class="line">sudo docker build -t koa-ts-api-server .</span><br><span class="line">sudo docker run -it --name koa-ts-api-server -p <span class="number">8080</span>:<span class="number">8080</span> koa-ts-api-server</span><br></pre></td></tr></table></figure>
-<h2 id="Test"><a href="#Test" class="headerlink" title="Test"></a>Test</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd myProject</span><br><span class="line">npm run test</span><br></pre></td></tr></table></figure>
+<h2 id="8、在-docker-下运行"><a href="#8、在-docker-下运行" class="headerlink" title="8、在 docker 下运行"></a>8、在 docker 下运行</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd myProject</span><br><span class="line">npm install</span><br><span class="line">npm run build</span><br><span class="line">sudo docker build -t koa-ts-api-server .</span><br><span class="line">sudo docker run -it --name koa-ts-api-server -p <span class="number">8080</span>:<span class="number">8080</span> koa-ts-api-server</span><br></pre></td></tr></table></figure>
+<h2 id="9、运行测试用例"><a href="#9、运行测试用例" class="headerlink" title="9、运行测试用例"></a>9、运行测试用例</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd myProject</span><br><span class="line">npm run test</span><br></pre></td></tr></table></figure>
+<h2 id="10、感谢"><a href="#10、感谢" class="headerlink" title="10、感谢"></a>10、感谢</h2><p>如果有遇到问题，欢迎来提 issue!</p>
+<p>如果此脚手架对您的工作、学习或者爬坑有帮助，请动动您的小手，给个 Star，Thanks!</p>
+<p>github 地址：<a href="https://github.com/SimpleCodeCX/koa-ts-cli" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/koa-ts-cli</a></p>
+<p>npm 包地址：<a href="https://www.npmjs.com/package/koa-ts-cli" target="_blank" rel="noopener">https://www.npmjs.com/package/koa-ts-cli</a></p>
     </div>
   </div>
   
@@ -289,7 +307,7 @@
         
           本文作者 : Simple <br/>
         
-        原文链接 : <a href="">https://simplecodecx.github.io/blog/20191113/9d06116e.html</a><br>
+        原文链接 : <a href="">https://simplecodecx.github.io/blog/20191117/d0893a5d.html</a><br>
         版权声明 : 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！
         </blockquote>
       </div>
@@ -333,15 +351,9 @@
       <div class="nav-pre">
         <i class="iconfont icon-prev"></i>
         上一篇:
-        <a href="/blog/20190825/2c3ab5b6.html" target="_self">关于 == 和 ===的区别</a>
+        <a href="/blog/20191113/9d06116e.html" target="_self">手写一个 koa-ts-cli 脚手架(英文版)</a>
       </div>
     
-    
-      <div class="nav-next">
-        下一篇:
-        <a href="/blog/20191117/d0893a5d.html" target="_self">手写一个 koa-ts-cli 脚手架(中文版)</a>
-        <i class="iconfont icon-next"></i>
-      </div>
     
   </nav>
 
