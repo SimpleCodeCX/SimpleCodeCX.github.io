@@ -202,6 +202,79 @@
   
   <div class="post">
     <h1 class="article-title">
+      <a href="/blog/20190224/e9584fe7.html">
+        <span>webpack4 系列实践笔记(7): 自动生成 Html 文件</span>
+      </a>
+    </h1>
+    <!-- PC端文章信息 -->
+    <div class="article-top-meta pc-view">
+      <span>
+        发布时间 : 2019-02-24
+      </span>
+    </div>
+    <!-- 移动端文章信息 -->
+    <div class="article-top-meta mobile-view">
+      <span>
+        发布 : 2019-02-24
+      </span>
+      
+        <span>
+        分类 :
+          <a href="/categories/webpack/">
+            webpack
+          </a>
+        </span>
+      
+      
+        <span>
+          浏览 : <span class="article-timer" data-identity="e9584fe7.html"></span>
+        </span>
+      
+    </div>
+    
+    <!-- 文章简介 -->
+    <div class="article-content">
+      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
+        <blockquote>
+<p>在之前的 demo 中，执行完 <code>webpack</code> 后要手动把生成的同步模块的 js 包 (或css包) 引入到html中，这样其实是比较繁琐的。<br>尤其是在真正的项目开发中，为了对静态资源或第三方包做长缓存，我们会配置 webpack ，让其生成的每个包的文件名都自动带上该包对应的 chunkhash 值。如果文件内容有改变的话，那么该文件对应的包的 chunkhash 也会改变，这样就导致对应的 html 引用的 url 地址也需要进行相应的修改。<br>因此，我们需要通过 webpack 插件来自动生成 html 以及自动引用相应的 js 包。<br>html-webpack-plugin 插件就能帮你做到。<br>
+      </div>
+    </div>
+    <div class="article-footer">
+      <div class="article-meta pull-left">
+        <!-- 分类pc端可见 -->
+        <span class="pc-view">
+          
+            <i class="iconfont icon-tag"></i>分类:
+            <a href="/categories/webpack/">
+              webpack
+            </a>
+          </span>
+          
+        <span>
+          
+            <i class="iconfont icon-06tags"></i>标签:
+            
+              <span class="span--tag">
+                <a href="/tags/前端构建工具/">
+                  #前端构建工具
+                </a>
+              </span>
+            
+                    
+        </span>
+      </div>
+      
+        <div class="article-meta pull-right">
+          <span class="pc-view">
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="e9584fe7.html"></span>
+          </span>
+        </div>
+      
+    </div>
+  </div>
+  
+  <div class="post">
+    <h1 class="article-title">
       <a href="/blog/20190224/4af33ce3.html">
         <span>webpack4 系列实践笔记(6): webpack + babel7 + typescript</span>
       </a>
@@ -851,79 +924,6 @@
         <div class="article-meta pull-right">
           <span class="pc-view">
             <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="8d45a80b.html"></span>
-          </span>
-        </div>
-      
-    </div>
-  </div>
-  
-  <div class="post">
-    <h1 class="article-title">
-      <a href="/blog/20181130/3ba3fd82.html">
-        <span>关于js正则表达式的贪婪和懒惰模式</span>
-      </a>
-    </h1>
-    <!-- PC端文章信息 -->
-    <div class="article-top-meta pc-view">
-      <span>
-        发布时间 : 2018-11-30
-      </span>
-    </div>
-    <!-- 移动端文章信息 -->
-    <div class="article-top-meta mobile-view">
-      <span>
-        发布 : 2018-11-30
-      </span>
-      
-        <span>
-        分类 :
-          <a href="/categories/正则/">
-            正则
-          </a>
-        </span>
-      
-      
-        <span>
-          浏览 : <span class="article-timer" data-identity="3ba3fd82.html"></span>
-        </span>
-      
-    </div>
-    
-    <!-- 文章简介 -->
-    <div class="article-content">
-      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
-        <blockquote>
-<p>正则表达式的量词有：* + ? {}<br>量词默认是贪婪模式，当在量词后面加上一个问号?时，就变成了懒惰模式。<br>
-      </div>
-    </div>
-    <div class="article-footer">
-      <div class="article-meta pull-left">
-        <!-- 分类pc端可见 -->
-        <span class="pc-view">
-          
-            <i class="iconfont icon-tag"></i>分类:
-            <a href="/categories/正则/">
-              正则
-            </a>
-          </span>
-          
-        <span>
-          
-            <i class="iconfont icon-06tags"></i>标签:
-            
-              <span class="span--tag">
-                <a href="/tags/前端/">
-                  #前端
-                </a>
-              </span>
-            
-                    
-        </span>
-      </div>
-      
-        <div class="article-meta pull-right">
-          <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="3ba3fd82.html"></span>
           </span>
         </div>
       

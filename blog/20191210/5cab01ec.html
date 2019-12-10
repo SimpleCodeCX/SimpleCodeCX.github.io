@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com" />
+  
+  
+
+  <title>
+    
+    Node WriteStream 可写流的实现原理 |
+    
+    Simple的个人博客
+  </title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta name="keywords" content="nodejs,后端," />
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n', 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+  <meta name="description" content="技术、音乐、个人博客">
+  
+
+  
+
+  
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+
+  
+  <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+  <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+<body>
+
+  
+
+  <div id="app">
+
+    <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">Simple</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a 
+              href="/"
+              target="_self"
+            >
+              首页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a 
+              href="/archives/"
+              target="_self"
+            >
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a 
+              href="/categories/"
+              target="_self"
+            >
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a 
+              href="/tags/"
+              target="_self"
+            >
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else>其他</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a 
+                    href="https://github.com/SimpleCodeCX" 
+                    target="_blank"
+                  >
+                    Github
+                  </a>
+                </li>
+              
+                <li>
+                  <a 
+                    href="https://www.jianshu.com/u/9be5a5a0beb9" 
+                    target="_blank"
+                  >
+                    简书
+                  </a>
+                </li>
+              
+                <li>
+                  <a 
+                    href="https://juejin.im/user/5bec5067e51d451402495715" 
+                    target="_blank"
+                  >
+                    掘金
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+    
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>Node WriteStream 可写流的实现原理</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2019-12-10
+    </span>
+    
+      <span>
+        分类 : 
+          <a href="/categories/nodejs/">
+            nodejs
+          </a>
+      </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="5cab01ec.html"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      </p>
+</blockquote>
+<p>本文代码放在 <a href="https://github.com/SimpleCodeCX/article/tree/master/nodejs/WriteStream" target="_blank" rel="noopener">Github</a>。</p>
+<h2 id="一、关于可写流"><a href="#一、关于可写流" class="headerlink" title="一、关于可写流"></a>一、关于可写流</h2><p>所有可写流都实现了 stream.Writable 类定义的接口，比如：<br>  1) 客户端的HTTP请求<br>  2) 服务器的HTTP响应<br>  3) fs的写入流<br>  4) zlib流<br>  5) 子进程的stdin</p>
+<p>可写流的用法有如下特点：</p>
+<p>1）可写流可以通过 write 写数据<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="comment">// 通过 createWriteStream 可以创建一个 WriteStream 的实例</span></span><br><span class="line"><span class="keyword">let</span> ws = fs.createWriteStream(<span class="string">'./name.txt'</span>, &#123;</span><br><span class="line">  flags: <span class="string">'w'</span>,</span><br><span class="line">  highWaterMark: <span class="number">2</span>, <span class="comment">// 定义缓冲区大小</span></span><br><span class="line">  autoClose: <span class="literal">true</span>,</span><br><span class="line">  start: <span class="number">0</span>, <span class="comment">// 开始写入的位置</span></span><br><span class="line">  mode: <span class="number">0o666</span>,</span><br><span class="line">  encoding: <span class="string">'utf8'</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// 只能写 字符串、buffer</span></span><br><span class="line">ws.write(<span class="string">'1'</span>, <span class="string">'utf8'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'写入1成功'</span>)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>2）可写流可以通过 end 写数据并关闭流，end() 相当于 write() + close()<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// end = write + close</span></span><br><span class="line">ws.end(<span class="string">'结束'</span>, <span class="string">'utf8'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'写入"结束"成功'</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>3）当写入数据达到 highWaterMark 的大小时，会触发 drain 事件<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 当正在写入数据 + 缓冲区数据长度超过 highWaterMark 的值时，会触发 drain 事件</span></span><br><span class="line">ws.on(<span class="string">'drain'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'drain'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h2 id="二、WriteStream-的用法"><a href="#二、WriteStream-的用法" class="headerlink" title="二、WriteStream 的用法"></a>二、WriteStream 的用法</h2><p>WriteStream 是可写流的一种，WriteStream 的用法如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 通过 createWriteStream 可以创建一个 WriteStream 的实例</span></span><br><span class="line"><span class="keyword">let</span> ws = fs.createWriteStream(<span class="string">'./name.txt'</span>, &#123;</span><br><span class="line">  flags: <span class="string">'w'</span>,<span class="comment">// 文件的打开模式</span></span><br><span class="line">  highWaterMark: <span class="number">2</span>, <span class="comment">// 定义缓冲区大小</span></span><br><span class="line">  autoClose: <span class="literal">true</span>, <span class="comment">// 是否自动关闭文档</span></span><br><span class="line">  start: <span class="number">0</span>, <span class="comment">// 写入文件的起始索引位置</span></span><br><span class="line">  mode: <span class="number">0o666</span>, <span class="comment">// 文件的权限设置</span></span><br><span class="line">  encoding: <span class="string">'utf8'</span> <span class="comment">// 写入文件的字符的编码</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 只能写 字符串、buffer</span></span><br><span class="line">ws.write(<span class="string">'1'</span>, <span class="string">'utf8'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'写入1成功'</span>)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 由于第一次可能还没写入完成，因此，此次写的内容会被保存在 WriteStream 的链表缓冲区中</span></span><br><span class="line">ws.write(<span class="string">'2'</span>, <span class="string">'utf8'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'写入2成功'</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 此次写的内容会被保存在 WriteStream 的链表缓冲区中</span></span><br><span class="line">ws.write(<span class="string">'3'</span>, <span class="string">'utf8'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'写入3成功'</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// end = write + close</span></span><br><span class="line">ws.end(<span class="string">'结束'</span>, <span class="string">'utf8'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'写入"结束"成功'</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 当正在写入数据 + 缓冲区数据长度超过 highWaterMark 的值时，会触发 drain 事件</span></span><br><span class="line">ws.on(<span class="string">'drain'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'drain'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>关键点分析：</p>
+<p>1、通过 fs.createWriteStream 可以创建一个 WriteStream 实例，具体用法可以看以上注释</p>
+<p>2、highWaterMark 用于设置 WriteStream 可写流缓冲区大小，默认为 16k，当正在写入数据 + 缓冲区数据长度超过 highWaterMark 的值时，会触发 drain 事件</p>
+<p>3、可写流 write 和 end 方法只能写 字符换 或 buffer 类型的数据</p>
+<p>4、并行写，顺序不会乱<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="comment">// 通过 createWriteStream 可以创建一个 WriteStream 的实例</span></span><br><span class="line"><span class="keyword">let</span> ws = fs.createWriteStream(<span class="string">'./name.txt'</span>, &#123;</span><br><span class="line">  flags: <span class="string">'w'</span>,<span class="comment">// 文件的打开模式</span></span><br><span class="line">  highWaterMark: <span class="number">2</span>, <span class="comment">// 定义缓冲区大小</span></span><br><span class="line">  autoClose: <span class="literal">true</span>, <span class="comment">// 是否自动关闭文档</span></span><br><span class="line">  start: <span class="number">0</span>, <span class="comment">// 写入文件的起始索引位置</span></span><br><span class="line">  mode: <span class="number">0o666</span>, <span class="comment">// 文件的权限设置</span></span><br><span class="line">  encoding: <span class="string">'utf8'</span> <span class="comment">// 写入文件的字符的编码</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">  ws.write(i.toString(), <span class="string">'utf8'</span>, () =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`写入<span class="subst">$&#123;i&#125;</span>成功`</span>)</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>5、通过一个字节的缓冲区 highWaterMark = 1 ，写入一个10个数<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="comment">// 通过 createWriteStream 可以创建一个 WriteStream 的实例</span></span><br><span class="line"><span class="keyword">let</span> ws = fs.createWriteStream(<span class="string">'./name.txt'</span>, &#123;</span><br><span class="line">  flags: <span class="string">'w'</span>,<span class="comment">// 文件的打开模式</span></span><br><span class="line">  highWaterMark: <span class="number">1</span>, <span class="comment">// 定义缓冲区大小</span></span><br><span class="line">  autoClose: <span class="literal">true</span>, <span class="comment">// 是否自动关闭文档</span></span><br><span class="line">  start: <span class="number">0</span>, <span class="comment">// 写入文件的起始索引位置</span></span><br><span class="line">  mode: <span class="number">0o666</span>, <span class="comment">// 文件的权限设置</span></span><br><span class="line">  encoding: <span class="string">'utf8'</span> <span class="comment">// 写入文件的字符的编码</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> index = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">write</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> flag = <span class="literal">true</span>;</span><br><span class="line">  <span class="keyword">while</span> (index &lt; <span class="number">10</span> &amp;&amp; flag) &#123;</span><br><span class="line">    flag = ws.write(index++ + <span class="string">''</span>, <span class="string">'utf8'</span>, () =&gt; &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">`写入成功`</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">write();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 当正在写入数据 + 缓冲区数据长度超过 highWaterMark 的值时，会触发 drain 事件</span></span><br><span class="line">ws.on(<span class="string">'drain'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">params</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'drain'</span>)</span><br><span class="line">  write();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h2 id="三、实现一个简单版的-WriteStream"><a href="#三、实现一个简单版的-WriteStream" class="headerlink" title="三、实现一个简单版的 WriteStream"></a>三、实现一个简单版的 WriteStream</h2><p>代码如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> EventEmitter = <span class="built_in">require</span>(<span class="string">'events'</span>);</span><br><span class="line"><span class="keyword">let</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 可写流需要考虑并发写的问题，比如并发写时，要确保写的顺序不错乱。</span></span><br><span class="line"><span class="comment"> * 为了保证并发写顺序不会乱，WriteStream 创建了一个链表结构缓冲区，</span></span><br><span class="line"><span class="comment"> * 用来按顺序缓存待写的内容，等待当前正在写的内容写完，再依次从缓冲区中一个一个读取出来继续写。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(element) &#123;</span><br><span class="line">    <span class="keyword">this</span>.element = element;</span><br><span class="line">    <span class="keyword">this</span>.next = <span class="literal">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LinkList</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">    <span class="keyword">this</span>.head = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">this</span>.length = <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  append(chunk) &#123;</span><br><span class="line">    <span class="keyword">let</span> node = <span class="keyword">new</span> Node(chunk);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.head == <span class="literal">null</span>) &#123; <span class="comment">// 链表的头</span></span><br><span class="line">      <span class="keyword">this</span>.head = node;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// 找到最后一个把当前节点 放到后面去</span></span><br><span class="line">      <span class="keyword">let</span> current = <span class="keyword">this</span>.head;</span><br><span class="line">      <span class="keyword">while</span> (current.next) &#123;</span><br><span class="line">        current = current.next;</span><br><span class="line">      &#125;</span><br><span class="line">      current.next = node;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.length++</span><br><span class="line">  &#125;</span><br><span class="line">  get() &#123;</span><br><span class="line">    <span class="keyword">let</span> head = <span class="keyword">this</span>.head;</span><br><span class="line">    <span class="keyword">if</span> (!head) <span class="keyword">return</span></span><br><span class="line">    <span class="keyword">this</span>.head = head.next;</span><br><span class="line">    <span class="keyword">this</span>.length--;</span><br><span class="line">    <span class="keyword">return</span> head.element</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="class"><span class="keyword">class</span> <span class="title">WriteStream</span> <span class="keyword">extends</span> <span class="title">EventEmitter</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(path, options) &#123;</span><br><span class="line">    <span class="keyword">super</span>();</span><br><span class="line">    <span class="keyword">this</span>.path = path;</span><br><span class="line">    <span class="keyword">this</span>.flags = options.flags || <span class="string">'w'</span>;</span><br><span class="line">    <span class="keyword">this</span>.highWaterMark = options.highWaterMark || <span class="number">16</span> * <span class="number">1024</span>;</span><br><span class="line">    <span class="keyword">this</span>.autoClose = options.autoClose || <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">this</span>.start = options.start || <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">this</span>.mode = options.mode || <span class="number">0o666</span>;</span><br><span class="line">    <span class="keyword">this</span>.encoding = options.encoding || <span class="string">'utf8'</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">this</span>._writing = <span class="literal">false</span>;<span class="comment">// 表示当前是否正在写入</span></span><br><span class="line">    <span class="keyword">this</span>.cache = <span class="keyword">new</span> LinkList(); <span class="comment">// 缓冲区，如果当前正在写，就把待写入的内容放到缓冲区中</span></span><br><span class="line">    <span class="comment">// 只有当前消耗掉了和期望值相等或者大于期望值的时候 设置成true</span></span><br><span class="line">    <span class="keyword">this</span>.needDrain = <span class="literal">false</span>; <span class="comment">// 当 缓存区的内容 + 正在写入的内容 超过 highWaterMark 时，设置为 true，代表需要出发 drain 事件</span></span><br><span class="line">    <span class="keyword">this</span>.pos = <span class="keyword">this</span>.start; <span class="comment">// 写入的位置的偏移量</span></span><br><span class="line">    <span class="keyword">this</span>.open(); <span class="comment">// 打开文件准备写入 </span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">this</span>.len = <span class="number">0</span>; <span class="comment">// 用来统计 缓冲区 + 正在写入的内容的个数</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 只能写 字符串 或 buffer 类型的数据</span></span><br><span class="line">  write(chunk, encoding = <span class="keyword">this</span>.encoding, callback) &#123;</span><br><span class="line">    chunk = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);</span><br><span class="line">    <span class="keyword">this</span>.len += chunk.length;</span><br><span class="line">    <span class="keyword">let</span> flag = <span class="keyword">this</span>.len &lt; <span class="keyword">this</span>.highWaterMark;</span><br><span class="line">    <span class="keyword">this</span>.needDrain = !flag <span class="comment">// 当 len &gt;= highWaterMark 时，设置 needDrain 为 true，需要触发 drain 事件</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>._writing) &#123;</span><br><span class="line">      <span class="comment">// 当前正在写，将待写内容保存到缓冲区中</span></span><br><span class="line">      <span class="keyword">this</span>.cache.append(&#123;</span><br><span class="line">        chunk,</span><br><span class="line">        encoding,</span><br><span class="line">        callback</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// 真正的写入逻辑</span></span><br><span class="line">      <span class="keyword">this</span>._writing = <span class="literal">true</span>;</span><br><span class="line">      <span class="keyword">this</span>._write(chunk, encoding, () =&gt; &#123;</span><br><span class="line">        callback &amp;&amp; callback();</span><br><span class="line">        <span class="keyword">this</span>.clearBuffer(); <span class="comment">// 从缓冲区中取出一个出来写</span></span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> flag; <span class="comment">// true: 没有超过 highWaterMark(可以继续写) || false: 超过 highWaterMark(不要继续写了)</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  clearBuffer() &#123; <span class="comment">// 依次从链表中取出一个出来写</span></span><br><span class="line">    <span class="keyword">let</span> obj = <span class="keyword">this</span>.cache.get();</span><br><span class="line">    <span class="keyword">if</span> (obj) &#123;</span><br><span class="line">      <span class="keyword">this</span>._write(obj.chunk, obj.encoding, () =&gt; &#123;</span><br><span class="line">        obj.callback &amp;&amp; obj.callback();</span><br><span class="line">        <span class="keyword">this</span>.clearBuffer();</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;<span class="comment">// obj 为 undefined 说明缓冲区已经清空完毕</span></span><br><span class="line">      <span class="keyword">this</span>._writing = <span class="literal">false</span>; <span class="comment">// 表示当前没有在写，下次再调用 write 可以直接向文件中写入</span></span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.needDrain) &#123;</span><br><span class="line">        <span class="comment">// 当 needDrain 为 true 时，需要触发 drain 事件</span></span><br><span class="line">        <span class="keyword">this</span>.needDrain = <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">this</span>.emit(<span class="string">'drain'</span>)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  open() &#123;</span><br><span class="line">    fs.open(<span class="keyword">this</span>.path, <span class="keyword">this</span>.flags, (err, fd) =&gt; &#123;</span><br><span class="line">      <span class="keyword">this</span>.fd = fd;</span><br><span class="line">      <span class="keyword">this</span>.emit(<span class="string">'open'</span>, fd)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  _write(chunk, encoding, clearBuffer) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="keyword">this</span>.fd !== <span class="string">'number'</span>) &#123;</span><br><span class="line">      <span class="comment">// 由于 fs.open 操作是异步的，所以这里要保证 fs.open 文件打开完毕，再开始写</span></span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>.once(<span class="string">'open'</span>, () =&gt; <span class="keyword">this</span>._write(chunk, encoding, clearBuffer))</span><br><span class="line">    &#125;</span><br><span class="line">    fs.write(<span class="keyword">this</span>.fd, chunk, <span class="number">0</span>, chunk.length, <span class="keyword">this</span>.pos, (err, written) =&gt; &#123;</span><br><span class="line">      <span class="keyword">this</span>.pos += written;</span><br><span class="line">      <span class="keyword">this</span>.len -= written</span><br><span class="line">      clearBuffer(); <span class="comment">// 每次写入成功就从缓冲区中依次取出一个出来继续写</span></span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  destroy(err) &#123;</span><br><span class="line">    fs.close(<span class="keyword">this</span>.fd, () =&gt; &#123;</span><br><span class="line">      <span class="keyword">this</span>.emit(<span class="string">'close'</span>, err);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// end 相当于 write + close</span></span><br><span class="line">  end(data) &#123;</span><br><span class="line">    <span class="keyword">this</span>.write(data, <span class="string">'utf8'</span>, () =&gt; &#123;</span><br><span class="line">      <span class="keyword">this</span>.destroy();</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>关键点分析：</p>
+<p>1、WriteStream 需要继承 EventEmitter<br>比如 drain、close、error 等事件都是基于 EventEmitter 实现的。</p>
+<p>2、构建一个链表结构的缓冲区，这里为什么不采用数组呢，因为在 WriteStream 中，每次都是从缓冲区中取出第一个数据出来写，如果是数组的话，每次 pop 一个数据出来后，需要涉及到数组的重排，因此这里采用链表的结构明显性能比较高。</p>
+<p>3、定义一个属性 _writing 来保存当前是否正在写的状态，当 _writing 为 true 时，代表当前正在写入，当 writing为 false 时，代表当前没有在写入。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>._writing = <span class="literal">false</span>;<span class="comment">// 表示当前是否正在写入</span></span><br></pre></td></tr></table></figure></p>
+<p>4、可写流的特点就是第一次 write 是真正的写，之后的 write 会被保存到缓冲区中，等当前的数据写完再从缓冲区中按顺序读出来继续写。</p>
+<p>5、定义一个属性 needDrain, 代表是否需要触发 drain 事件<br>    当缓冲区的长度和正在写入的长度达到了期望的值 highWaterMark 时，设置为 needDrain 为 true。</p>
+<p>6、WriteStream 默认会先 open 文件<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WriteStream</span> <span class="keyword">extends</span> <span class="title">EventEmitter</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(path, options) &#123;</span><br><span class="line">    <span class="keyword">super</span>();</span><br><span class="line">    <span class="keyword">this</span>.path = path;</span><br><span class="line">    <span class="keyword">this</span>.flags = options.flags || <span class="string">'w'</span>;</span><br><span class="line">    <span class="keyword">this</span>.highWaterMark = options.highWaterMark || <span class="number">16</span> * <span class="number">1024</span>;</span><br><span class="line">    <span class="keyword">this</span>.autoClose = options.autoClose || <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">this</span>.start = options.start || <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">this</span>.mode = options.mode || <span class="number">0o666</span>;</span><br><span class="line">    <span class="keyword">this</span>.encoding = options.encoding || <span class="string">'utf8'</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">this</span>._writing = <span class="literal">false</span>;<span class="comment">// 表示当前是否正在写入</span></span><br><span class="line">    <span class="keyword">this</span>.cache = <span class="keyword">new</span> LinkList(); <span class="comment">// 缓冲区，如果当前正在写，就把待写入的内容放到缓冲区中</span></span><br><span class="line">    <span class="comment">// 只有当前消耗掉了和期望值相等或者大于期望值的时候 设置成true</span></span><br><span class="line">    <span class="keyword">this</span>.needDrain = <span class="literal">false</span>; <span class="comment">// 当 缓存区的内容 + 正在写入的内容 超过 highWaterMark 时，设置为 true，代表需要出发 drain 事件</span></span><br><span class="line">    <span class="keyword">this</span>.pos = <span class="keyword">this</span>.start; <span class="comment">// 写入的位置的偏移量</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">this</span>.open(); <span class="comment">// 打开文件准备写入 </span></span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  open() &#123;</span><br><span class="line">    fs.open(<span class="keyword">this</span>.path, <span class="keyword">this</span>.flags, (err, fd) =&gt; &#123;</span><br><span class="line">      <span class="keyword">this</span>.fd = fd;</span><br><span class="line">      <span class="keyword">this</span>.emit(<span class="string">'open'</span>, fd)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>7、实现 write</p>
+<p>所有可写流都需要实现 stream.Writable 类定义的接口，write 是 stream.Writable 的一个方法，在 write 方法内部会调用子类 (WriteStream) 的 _write ，本文为了方便理解，把 write 的逻辑包含在了 WriteStream 中。</p>
+<p>write 主要实现的功能如下：</p>
+<p>7-1、将 chunk 统一转化为 Buffer 类型</p>
+<p>7-2、根据 _writing 判断当前是否正在写，如果是，将数据存到缓冲区中，否则，调用 _write 进行真正的写数据</p>
+<p>7-3、write 函数返回一个 flat 状态，代表目前缓冲区内的数据长度是否小于 highWaterMark，是则可以继续写，不是则不能继续写，并且会触发 drain 事件<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 只能写 字符串 或 buffer 类型的数据</span></span><br><span class="line">  write(chunk, encoding = <span class="keyword">this</span>.encoding, callback) &#123;</span><br><span class="line">    chunk = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);</span><br><span class="line">    <span class="keyword">this</span>.len += chunk.length;</span><br><span class="line">    <span class="keyword">let</span> flag = <span class="keyword">this</span>.len &lt; <span class="keyword">this</span>.highWaterMark;</span><br><span class="line">    <span class="keyword">this</span>.needDrain = !flag <span class="comment">// 当 len &gt;= highWaterMark 时，设置 needDrain 为 true，需要触发 drain 事件</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>._writing) &#123;</span><br><span class="line">      <span class="comment">// 当前正在写，将待写内容保存到缓冲区中</span></span><br><span class="line">      <span class="keyword">this</span>.cache.append(&#123;</span><br><span class="line">        chunk,</span><br><span class="line">        encoding,</span><br><span class="line">        callback</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// 真正的写入逻辑</span></span><br><span class="line">      <span class="keyword">this</span>._writing = <span class="literal">true</span>;</span><br><span class="line">      <span class="keyword">this</span>._write(chunk, encoding, () =&gt; &#123;</span><br><span class="line">        callback &amp;&amp; callback();</span><br><span class="line">        <span class="keyword">this</span>.clearBuffer(); <span class="comment">// 从缓冲区中取出一个出来写</span></span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> flag; <span class="comment">// true: 没有超过 highWaterMark(可以继续写) || false: 超过 highWaterMark(不要继续写了)</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>8、实现 _write 函数</p>
+<p>可写流必须实现 stream.Writable 的 writable._write() 或 writable._writev() 方法。<br>这里实现 writable._write() 方法。</p>
+<p>关键点：</p>
+<p>8-1、要确保 fs.open 打开成功后拿到 fd 才能开始写。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">_write(chunk, encoding, clearBuffer) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="keyword">this</span>.fd !== <span class="string">'number'</span>) &#123;</span><br><span class="line">      <span class="comment">// 由于 fs.open 操作是异步的，所以这里要保证 fs.open 文件打开完毕，再开始写</span></span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>.once(<span class="string">'open'</span>, () =&gt; <span class="keyword">this</span>._write(chunk, encoding, clearBuffer))</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>8-2、当写完此次 chunk 的数据后，需要从缓冲区中取出一个出来继续写，直到清空缓冲区里的数据</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">_write(chunk, encoding, clearBuffer) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="keyword">this</span>.fd !== <span class="string">'number'</span>) &#123;</span><br><span class="line">      <span class="comment">// 由于 fs.open 操作是异步的，所以这里要保证 fs.open 文件打开完毕，再开始写</span></span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>.once(<span class="string">'open'</span>, () =&gt; <span class="keyword">this</span>._write(chunk, encoding, clearBuffer))</span><br><span class="line">    &#125;</span><br><span class="line">    fs.write(<span class="keyword">this</span>.fd, chunk, <span class="number">0</span>, chunk.length, <span class="keyword">this</span>.pos, (err, written) =&gt; &#123;</span><br><span class="line">      <span class="keyword">this</span>.pos += written;</span><br><span class="line">      <span class="keyword">this</span>.len -= written</span><br><span class="line">      clearBuffer(); <span class="comment">// 每次写入成功就从缓冲区中依次取出一个出来继续写</span></span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  clearBuffer() &#123; <span class="comment">// 依次从链表中取出一个出来写</span></span><br><span class="line">    <span class="keyword">let</span> obj = <span class="keyword">this</span>.cache.get();</span><br><span class="line">    <span class="keyword">if</span> (obj) &#123;</span><br><span class="line">      <span class="keyword">this</span>._write(obj.chunk, obj.encoding, () =&gt; &#123;</span><br><span class="line">        obj.callback &amp;&amp; obj.callback();</span><br><span class="line">        <span class="keyword">this</span>.clearBuffer();</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;<span class="comment">// obj 为 undefined 说明缓冲区已经清空完毕</span></span><br><span class="line">      <span class="keyword">this</span>._writing = <span class="literal">false</span>; <span class="comment">// 表示当前没有在写，下次再调用 write 可以直接向文件中写入</span></span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.needDrain) &#123;</span><br><span class="line">        <span class="comment">// 当 needDrain 为 true 时，需要触发 drain 事件</span></span><br><span class="line">        <span class="keyword">this</span>.needDrain = <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">this</span>.emit(<span class="string">'drain'</span>)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>参考文档：</p>
+<p>createWriteStream:<br><a href="http://nodejs.cn/api/fs.html#fs_fs_createwritestream_path_options" target="_blank" rel="noopener">http://nodejs.cn/api/fs.html#fs_fs_createwritestream_path_options</a>  </p>
+<p>stream.Writable:<br><a href="http://nodejs.cn/api/stream.html#stream_class_stream_writable" target="_blank" rel="noopener">http://nodejs.cn/api/stream.html#stream_class_stream_writable</a></p>
+    </div>
+  </div>
+  
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : Simple <br/>
+        
+        原文链接 : <a href="">https://simplecodecx.github.io/blog/20191210/5cab01ec.html</a><br>
+        版权声明 : 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！
+        </blockquote>
+      </div>
+    </div>
+  
+  
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/后端/">
+              #后端
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/blog/20191117/d0893a5d.html" target="_self">手写一个 koa-ts-cli 脚手架(中文版)</a>
+      </div>
+    
+    
+  </nav>
+
+  
+    <a href="#comment" class="comment-anchor"></a>
+<div class="comment-title"><i class="iconfont icon-footprint"></i> 留下足迹 <i class="iconfont icon-footprint"></i></div>
+<div id="vcomments"></div>
+
+<script defer>
+  if( true ) {
+    let path = getRealPath()
+    new Valine({
+      el: "#vcomments",
+      appId: "NBVBu5udttyakQLndVdiLdJp-gzGzoHsz",
+      appKey: "wwjYbDQ5B5IqDqtjfFwXn6I7",
+      notify: false,
+      verify: false,
+      avatar: "robohash",
+      placeholder: "正确填写邮箱, 才能及时收到回复哦♪(^∇^*)",
+      path
+    });
+  }
+</script>
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("NBVBu5udttyakQLndVdiLdJp-gzGzoHsz", "wwjYbDQ5B5IqDqtjfFwXn6I7");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
+</div>
+
+
+    <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+    <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44133002100143" target="_blank">粤公网安备
+      44133002100143号</a>
+
+    <a href="http://www.miitbeian.gov.cn" target="_blank">粤ICP备19031481号-1</a>
+  </p>
+</footer>
+
+
+
+<script>
+  const timeToNowDOM = document.querySelector("#time-to-now");
+  const startTimestamp = new Date(, , ).getTime();
+
+  const updateTimeStr = () => {
+    let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+      day = Math.floor(offset / 86400),
+      hour = Math.floor((offset % 86400) / 3600),
+      minute = Math.floor(((offset % 86400) % 3600) / 60),
+      second = Math.floor(((offset % 86400) % 3600) % 60);
+    timeToNowDOM.innerHTML =
+      day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+    setTimeout(updateTimeStr, 500);
+  }
+
+  setTimeout(updateTimeStr, 500);
+</script>
+
+    <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+  </div>
+
+  
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+  
+
+  <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+  
+</body>
+
+</html>

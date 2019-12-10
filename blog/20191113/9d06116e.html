@@ -240,14 +240,16 @@
     <div class="markdown-body">
       </p>
 </blockquote>
-<h1 id="koa-ts-cli"><a href="#koa-ts-cli" class="headerlink" title="koa-ts-cli"></a>koa-ts-cli</h1><p>A simple CLI for create koa + ts project: <code>koats create myProject</code>.</p>
-<h2 id="Templates"><a href="#Templates" class="headerlink" title="Templates"></a>Templates</h2><p>Koats provide three templates that are all based on ts.</p>
+<h1 id="koa-ts-cli"><a href="#koa-ts-cli" class="headerlink" title="koa-ts-cli"></a><a href="https://www.npmjs.com/package/koa-ts-cli" target="_blank" rel="noopener">koa-ts-cli</a></h1><p>A simple CLI for create koa + ts project: <code>koats create myProject</code>.</p>
+<h2 id="Templates"><a href="#Templates" class="headerlink" title="Templates"></a>Templates</h2><p>koats provide three templates that are all based on ts.</p>
 <ul>
 <li><p><a href="https://github.com/SimpleCodeCX/koa-ts-base-template" target="_blank" rel="noopener">koa-ts-base-template</a></p>
-<p>This is a basic of koa project structure, integrated with ts. If you want to custom the structure of the project, this template is for you</p>
+<p>This is a basic of koa project structure, integrated with ts. If you want to custom the structure of the project, this template is for you.</p>
+<p>For more details, please see <a href="https://github.com/SimpleCodeCX/koa-ts-base-template" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/koa-ts-base-template</a></p>
 </li>
 <li><p><a href="https://github.com/SimpleCodeCX/koa-ts-full-template" target="_blank" rel="noopener">koa-ts-full-template</a></p>
-<p>This is a full project structure, integrated with ts.This project has been configured with a mysql database, support different environment(local,dev,prod) configuration, some custom koa middleware have configured, and it has been the definition of a unified api response format.</p>
+<p>This is a full project structure, integrated with ts.This project has been configured with a mysql database, support different environment(dev,prod,testing) configuration, some custom koa middleware have configured, and it has been the definition of a unified api response format.</p>
+<p> For more details, please see <a href="https://github.com/SimpleCodeCX/koa-ts-full-template" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/koa-ts-full-template</a></p>
 </li>
 <li><p><a href="https://github.com/SimpleCodeCX/koa-ts-full-stack-server" target="_blank" rel="noopener">koa-ts-full-stack-template</a></p>
 <p>This is a full-stack project structure based on koa-ts-full-template.</p>
@@ -255,7 +257,9 @@
 <ul>
 <li>client: This directory is the front-end code.</li>
 <li>server: This directory is the back-end code.</li>
-<li>common: This directory is the common code for front-end and back-end.</li>
+<li><p>common: This directory is the common code for front-end and back-end.</p>
+<p>For more details, please see <a href="https://github.com/SimpleCodeCX/koa-ts-full-stack-server" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/koa-ts-full-stack-server</a></p>
+</li>
 </ul>
 </li>
 </ul>
@@ -269,15 +273,15 @@
 <p>✓ <a href="https://github.com/typicode/husky" target="_blank" rel="noopener">Husky</a></p>
 <h2 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i -g koa-ts-cli</span><br></pre></td></tr></table></figure>
 <h2 id="Create-Project"><a href="#Create-Project" class="headerlink" title="Create Project"></a>Create Project</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">koats create myProject</span><br><span class="line"># Choose your favorite template.</span><br><span class="line"></span><br><span class="line">cd myProject</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure>
-<h2 id="In-development-mode"><a href="#In-development-mode" class="headerlink" title="In development mode"></a>In development mode</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd myProject</span><br><span class="line">npm run dev</span><br></pre></td></tr></table></figure>
+<h2 id="In-Development-Mode"><a href="#In-Development-Mode" class="headerlink" title="In Development Mode"></a>In Development Mode</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd myProject</span><br><span class="line">npm run dev</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>NOTE: If you choose koa-ts-full-template or koa-ts-full-stack-template, you need to do some configuration.</p>
 </blockquote>
-<h2 id="In-porduction-mode"><a href="#In-porduction-mode" class="headerlink" title="In porduction mode"></a>In porduction mode</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm run build</span><br><span class="line">cd myProject/dist</span><br><span class="line">npm run prod</span><br></pre></td></tr></table></figure>
+<h2 id="In-Porduction-Mode"><a href="#In-Porduction-Mode" class="headerlink" title="In Porduction Mode"></a>In Porduction Mode</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm run build</span><br><span class="line">cd myProject/dist</span><br><span class="line">npm run prod</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>NOTE: If you choose koa-ts-full-template or koa-ts-full-stack-template, you need to do some configuration.</p>
 </blockquote>
-<h2 id="Run-in-docker"><a href="#Run-in-docker" class="headerlink" title="Run in docker"></a>Run in docker</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd myProject</span><br><span class="line">npm install</span><br><span class="line">npm run build</span><br><span class="line">sudo docker build -t koa-ts-api-server .</span><br><span class="line">sudo docker run -it --name koa-ts-api-server -p <span class="number">8080</span>:<span class="number">8080</span> koa-ts-api-server</span><br></pre></td></tr></table></figure>
+<h2 id="Run-In-Docker"><a href="#Run-In-Docker" class="headerlink" title="Run In Docker"></a>Run In Docker</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd myProject</span><br><span class="line">npm install</span><br><span class="line">npm run build</span><br><span class="line">sudo docker build -t koa-ts-api-server .</span><br><span class="line">sudo docker run -it --name koa-ts-api-server -p <span class="number">8080</span>:<span class="number">8080</span> koa-ts-api-server</span><br></pre></td></tr></table></figure>
 <h2 id="Test"><a href="#Test" class="headerlink" title="Test"></a>Test</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd myProject</span><br><span class="line">npm run test</span><br></pre></td></tr></table></figure>
     </div>
   </div>
