@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com" />
+  
+  
+
+  <title>
+    
+    剖析并实现一个简单版的koa框架 |
+    
+    Simple的个人博客
+  </title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta name="keywords" content="nodejs,后端," />
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n', 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+  <meta name="description" content="技术、音乐、个人博客">
+  
+
+  
+
+  
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+
+  
+  <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+  <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+<body>
+
+  
+
+  <div id="app">
+
+    <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">Simple</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a 
+              href="/"
+              target="_self"
+            >
+              首页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a 
+              href="/archives/"
+              target="_self"
+            >
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a 
+              href="/categories/"
+              target="_self"
+            >
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a 
+              href="/tags/"
+              target="_self"
+            >
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else>其他</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a 
+                    href="https://github.com/SimpleCodeCX" 
+                    target="_blank"
+                  >
+                    Github
+                  </a>
+                </li>
+              
+                <li>
+                  <a 
+                    href="https://www.jianshu.com/u/9be5a5a0beb9" 
+                    target="_blank"
+                  >
+                    简书
+                  </a>
+                </li>
+              
+                <li>
+                  <a 
+                    href="https://juejin.im/user/5bec5067e51d451402495715" 
+                    target="_blank"
+                  >
+                    掘金
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+    
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>剖析并实现一个简单版的koa框架</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2020-05-12
+    </span>
+    
+      <span>
+        分类 : 
+          <a href="/categories/nodejs/">
+            nodejs
+          </a>
+      </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="50328b1d.html"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      </p>
+</blockquote>
+<p>本文代码放在 <a href="https://github.com/SimpleCodeCX/simple-koa" target="_blank" rel="noopener">Github</a>。</p>
+<h3 id="一、关于-node-http-的用法"><a href="#一、关于-node-http-的用法" class="headerlink" title="一、关于 node http 的用法"></a>一、关于 node http 的用法</h3><p>node http 的用法很简单，http 的每次请求，都会带有 request 和 response 两个对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> server = http.createServer(<span class="function">(<span class="params">request, response</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// request 可以获取到 http 请求头相关的东西</span></span><br><span class="line">  <span class="built_in">console</span>.log(request.method);</span><br><span class="line">  <span class="built_in">console</span>.log(request.url);</span><br><span class="line">  <span class="built_in">console</span>.log(request.headers[<span class="string">'cookie'</span>]);</span><br><span class="line">  <span class="built_in">console</span>.log(request.httpVersion);</span><br><span class="line">  <span class="comment">// response 响应流</span></span><br><span class="line">  response.write(<span class="string">'response data.'</span>);</span><br><span class="line">  response.end();</span><br><span class="line">&#125;);</span><br><span class="line">server.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+<p>通过 request 可以获取到请求头相关的东西，比如请求头的 method、url、http header 等等，另外，request 继承自可读流，因此 request 具备可读流的所有特点，比如可以监听 on(‘data’) 获取到请求体的内容，也可以on(‘end’) 监听流的结束，代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> data = [];</span><br><span class="line">  request.on(<span class="string">'data'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">dataBuffer</span>) </span>&#123;</span><br><span class="line">    data.push(dataBuffer);</span><br><span class="line">  &#125;);</span><br><span class="line">  request.on(<span class="string">'end'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> buffer = Buffer.concat(data).toString();</span><br><span class="line">    <span class="built_in">console</span>.log(buffer);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<p>response 继承自可写流，拥有可写流的所有特点，比如 write、end 、close操作，<br>通过 response.wirte(‘响应数据’) + response.end() 可以向客户端响应数据。<br>response.end(‘xxx’) 相当于 response.write(‘xxx’) + response.close();<br>代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">response.write(<span class="string">'response data.'</span>);</span><br><span class="line">  response.end();</span><br></pre></td></tr></table></figure>
+<h3 id="二、koa-是基于-node-http-的"><a href="#二、koa-是基于-node-http-的" class="headerlink" title="二、koa 是基于 node http 的"></a>二、koa 是基于 node http 的</h3><p>koa 是一个 http 框架，因此，koa 是基于 node http 模块的。<br>最简单的 koa 实现如下（其实内部就是封装了 http）：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Koa</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(fn) &#123;</span><br><span class="line">    <span class="keyword">this</span>.fn = fn;</span><br><span class="line">  &#125;</span><br><span class="line">  listen(...args) &#123;</span><br><span class="line">    <span class="keyword">const</span> server = http.createServer(<span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>.fn(req, res);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">return</span> server.listen(...args);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">handleHttp</span>(<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">  res.end(<span class="string">'response data.'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> koa = <span class="keyword">new</span> Koa(handleHttp);</span><br><span class="line">koa.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure></p>
+<h3 id="三、koa-的上下文-Context"><a href="#三、koa-的上下文-Context" class="headerlink" title="三、koa 的上下文 Context"></a>三、koa 的上下文 Context</h3><h4 id="1、在-koa-的Context-中，实现了如下功能："><a href="#1、在-koa-的Context-中，实现了如下功能：" class="headerlink" title="1、在 koa 的Context 中，实现了如下功能："></a>1、在 koa 的Context 中，实现了如下功能：</h4><ul>
+<li>1）分别定义了 req和res 属性来保留原生的 request和response 对象，因此我们可以通过 ctx.req 和 ctx.res 访问到原来的 request和response 对象。</li>
+<li>2）分别定义了 request 和 response 属性，用于扩展 原生的request和response 对象。</li>
+<li>3）实现了委托，把 context 上的属性，委托给 request 或 response 对象，比如，当我访问 ctx.body=xxxx 的时候，其实访问的是 response.body=xxx，当我访问 ctx.method 的时候，其实访问的是 request.method。</li>
+</ul>
+<h4 id="2、委托的实现原理如下："><a href="#2、委托的实现原理如下：" class="headerlink" title="2、委托的实现原理如下："></a>2、委托的实现原理如下：</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Delegator</span>(<span class="params">proto, target</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!(<span class="keyword">this</span> <span class="keyword">instanceof</span> Delegator)) &#123; <span class="comment">// 这里是为了保证 Delegator 的实例是 new 出来的</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Delegator(proto, target);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">this</span>.proto = proto;</span><br><span class="line">  <span class="keyword">this</span>.target = target;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Delegator.prototype.getter = <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> proto = <span class="keyword">this</span>.proto;</span><br><span class="line">  <span class="keyword">const</span> target = <span class="keyword">this</span>.target;</span><br><span class="line">  proto.__defineGetter__(name, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>[target][name]; <span class="comment">// 当访问 proto[name] 的时候，访问的是 proto[target][name]</span></span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br><span class="line">Delegator.prototype.setter = <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> proto = <span class="keyword">this</span>.proto;</span><br><span class="line">  <span class="keyword">const</span> target = <span class="keyword">this</span>.target;</span><br><span class="line">  proto.__defineSetter__(name, <span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>[target][name] = value; <span class="comment">// 当设置 proto[name] 的时候，访问的是 proto[target][name]</span></span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br><span class="line">Delegator.prototype.access = <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.getter(name).setter(name);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Delegator.prototype.method = <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> proto = <span class="keyword">this</span>.proto;</span><br><span class="line">  <span class="keyword">const</span> target = <span class="keyword">this</span>.target;</span><br><span class="line">  proto[name] = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 当调用 proto[name]() 函数的时候，访问的是 proto[target][name]()</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>[target][name].apply(target, <span class="built_in">arguments</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> context = &#123;</span><br><span class="line">  request: &#123;</span><br><span class="line">    a: <span class="number">123</span>,</span><br><span class="line">    fn: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">'fn'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">Delegator(context, <span class="string">'request'</span>)</span><br><span class="line">  .getter(<span class="string">'a'</span>)</span><br><span class="line">  .setter(<span class="string">'a'</span>)</span><br><span class="line">  .method(<span class="string">'fn'</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(context.a); <span class="comment">// 123</span></span><br><span class="line"><span class="built_in">console</span>.log(context.fn()); <span class="comment">// fn</span></span><br></pre></td></tr></table></figure>
+<p>输出如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">123</span></span><br><span class="line">fn</span><br></pre></td></tr></table></figure></p>
+<h4 id="3、Context-在-koa-的应用"><a href="#3、Context-在-koa-的应用" class="headerlink" title="3、Context 在 koa 的应用"></a>3、Context 在 koa 的应用</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> request = &#123;</span><br><span class="line">  get method() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.req.method;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">const</span> response = &#123;</span><br><span class="line">  get body() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>._body;</span><br><span class="line">  &#125;,</span><br><span class="line">  set body(val) &#123;</span><br><span class="line">    <span class="keyword">this</span>._body = val;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">const</span> context = &#123;&#125;;</span><br><span class="line">Delegator(context, <span class="string">'request'</span>).getter(<span class="string">'method'</span>);</span><br><span class="line">Delegator(context, <span class="string">'response'</span>).access(<span class="string">'body'</span>);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Koa</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(fn) &#123;</span><br><span class="line">    <span class="keyword">this</span>.fn = fn;</span><br><span class="line">    <span class="keyword">this</span>.context = <span class="built_in">Object</span>.create(context);</span><br><span class="line">    <span class="keyword">this</span>.request = <span class="built_in">Object</span>.create(request);</span><br><span class="line">    <span class="keyword">this</span>.response = <span class="built_in">Object</span>.create(response);</span><br><span class="line">  &#125;</span><br><span class="line">  listen(...args) &#123;</span><br><span class="line">    <span class="keyword">const</span> server = http.createServer(<span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> context = <span class="keyword">this</span>.createContext(req, res);</span><br><span class="line">      <span class="built_in">Promise</span>.resolve(<span class="keyword">this</span>.fn(context)).then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> body = <span class="string">'koa response'</span>;</span><br><span class="line">        <span class="keyword">if</span> (context.body) &#123;</span><br><span class="line">          body = context.body;</span><br><span class="line">        &#125;</span><br><span class="line">        res.write(body);</span><br><span class="line">        res.end();</span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">return</span> server.listen(...args);</span><br><span class="line">  &#125;</span><br><span class="line">  createContext(req, res) &#123;</span><br><span class="line">    <span class="keyword">const</span> context = <span class="built_in">Object</span>.create(<span class="keyword">this</span>.context);</span><br><span class="line">    context.res = res;</span><br><span class="line">    context.req = req;</span><br><span class="line">    context.request = <span class="built_in">Object</span>.create(<span class="keyword">this</span>.request);</span><br><span class="line">    context.response = <span class="built_in">Object</span>.create(<span class="keyword">this</span>.response);</span><br><span class="line">    context.req = request.req = response.req = req;</span><br><span class="line">    context.res = request.res = response.res = res;</span><br><span class="line">    <span class="keyword">return</span> context;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">handleHttp</span>(<span class="params">ctx</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(ctx.method); <span class="comment">// ctx.method 会被委托到 ctx.request.method</span></span><br><span class="line">  ctx.body = <span class="string">'reponse data.'</span>; <span class="comment">// ctx.body 会被委托到 ctx.response.body</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> koa = <span class="keyword">new</span> Koa(handleHttp);</span><br><span class="line">koa.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="四、middleware-中间件-洋葱模型"><a href="#四、middleware-中间件-洋葱模型" class="headerlink" title="四、middleware(中间件)洋葱模型"></a>四、middleware(中间件)洋葱模型</h3><p>koa 的核心思想在于基于中间件的洋葱模型，koa 通过一个 compose 函数，把一个一个的中间件串联起来，组合成了一个大的函数，在每个中间件里，通过 next() 执行下一个中间件。<br>引用官方的一张洋葱模型图，如下：</p>
+<p><img src="https://user-gold-cdn.xitu.io/2020/5/12/17209328e7a05419?w=660&amp;h=491&amp;f=png&amp;s=129101" alt=""></p>
+<p>compose 的代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">compose</span>(<span class="params">middlewares</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params">context, next</span>) </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">dispatch</span>(<span class="params">i</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">let</span> fn = middlewares[i];</span><br><span class="line">      <span class="keyword">if</span> (i === middlewares.length) fn = next;</span><br><span class="line">      <span class="keyword">if</span> (!fn) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve();</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve(fn(context, () =&gt; &#123;</span><br><span class="line">          <span class="keyword">return</span> dispatch(i + <span class="number">1</span>);</span><br><span class="line">        &#125;));</span><br><span class="line">      &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Promise</span>.reject(e);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> dispatch(<span class="number">0</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> middlewares = [];</span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">a</span>(<span class="params">ctx, next</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'a1'</span>);</span><br><span class="line">  <span class="keyword">const</span> r = <span class="keyword">await</span> next();</span><br><span class="line">  <span class="built_in">console</span>.log(r);</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'a2'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params">ctx, next</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'b1'</span>);</span><br><span class="line">  <span class="keyword">await</span> next();</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'b2'</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="string">'b'</span>;</span><br><span class="line">&#125;</span><br><span class="line">middlewares.push(a);</span><br><span class="line">middlewares.push(b);</span><br><span class="line">compose(middlewares)(&#123;&#125;).then(<span class="function"><span class="params">v</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'ddd'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>以上代码的执行顺序如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">a <span class="keyword">in</span></span><br><span class="line">b <span class="keyword">in</span></span><br><span class="line">b out</span><br><span class="line">b</span><br><span class="line">a out</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<h3 id="五、在-koa-应用中间件洋葱模型"><a href="#五、在-koa-应用中间件洋葱模型" class="headerlink" title="五、在 koa 应用中间件洋葱模型"></a>五、在 koa 应用中间件洋葱模型</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</span><br><span class="line"><span class="keyword">const</span> EventEmitter = <span class="built_in">require</span>(<span class="string">'events'</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">compose</span>(<span class="params">middlewares</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span> (<span class="params">context, next</span>) </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">dispatch</span>(<span class="params">i</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">let</span> fn = middlewares[i];</span><br><span class="line">      <span class="keyword">if</span> (i === middlewares.length) fn = next;</span><br><span class="line">      <span class="keyword">if</span> (!fn) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve();</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve(fn(context, () =&gt; &#123;</span><br><span class="line">          <span class="keyword">return</span> dispatch(i + <span class="number">1</span>);</span><br><span class="line">        &#125;));</span><br><span class="line">      &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">Promise</span>.reject(e);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> dispatch(<span class="number">0</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Delegator</span>(<span class="params">proto, target</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!(<span class="keyword">this</span> <span class="keyword">instanceof</span> Delegator)) &#123; <span class="comment">// 这里是为了保证 Delegator 的实例是 new 出来的</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Delegator(proto, target);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">this</span>.proto = proto;</span><br><span class="line">  <span class="keyword">this</span>.target = target;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Delegator.prototype.getter = <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> proto = <span class="keyword">this</span>.proto;</span><br><span class="line">  <span class="keyword">const</span> target = <span class="keyword">this</span>.target;</span><br><span class="line">  proto.__defineGetter__(name, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>[target][name]; <span class="comment">// 当访问 proto[name] 的时候，访问的是 proto[target][name]</span></span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br><span class="line">Delegator.prototype.setter = <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> proto = <span class="keyword">this</span>.proto;</span><br><span class="line">  <span class="keyword">const</span> target = <span class="keyword">this</span>.target;</span><br><span class="line">  proto.__defineSetter__(name, <span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>[target][name] = value; <span class="comment">// 当设置 proto[name] 的时候，访问的是 proto[target][name]</span></span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br><span class="line">Delegator.prototype.access = <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.getter(name).setter(name);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Delegator.prototype.method = <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> proto = <span class="keyword">this</span>.proto;</span><br><span class="line">  <span class="keyword">const</span> target = <span class="keyword">this</span>.target;</span><br><span class="line">  proto[name] = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 当调用 proto[name]() 函数的时候，访问的是 proto[target][name]()</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>[target][name].apply(target, <span class="built_in">arguments</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> request = &#123;</span><br><span class="line">  get method() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.req.method;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">const</span> response = &#123;</span><br><span class="line">  get body() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>._body;</span><br><span class="line">  &#125;,</span><br><span class="line">  set body(val) &#123;</span><br><span class="line">    <span class="keyword">this</span>._body = val;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">const</span> context = &#123;&#125;;</span><br><span class="line">Delegator(context, <span class="string">'request'</span>).getter(<span class="string">'method'</span>);</span><br><span class="line">Delegator(context, <span class="string">'response'</span>).access(<span class="string">'body'</span>);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Koa</span> <span class="keyword">extends</span> <span class="title">EventEmitter</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">    <span class="keyword">super</span>();</span><br><span class="line">    <span class="keyword">this</span>.middlewares = [];</span><br><span class="line">    <span class="keyword">this</span>.context = <span class="built_in">Object</span>.create(context);</span><br><span class="line">    <span class="keyword">this</span>.request = <span class="built_in">Object</span>.create(request);</span><br><span class="line">    <span class="keyword">this</span>.response = <span class="built_in">Object</span>.create(response);</span><br><span class="line">  &#125;</span><br><span class="line">  listen(...args) &#123;</span><br><span class="line">    <span class="keyword">const</span> server = http.createServer(<span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>.handleHttp(req, res);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">return</span> server.listen(...args);</span><br><span class="line">  &#125;</span><br><span class="line">  use(fn) &#123;</span><br><span class="line">    <span class="keyword">this</span>.middlewares.push(fn);</span><br><span class="line">  &#125;</span><br><span class="line">  handleHttp(req, res) &#123;</span><br><span class="line">    <span class="keyword">const</span> middleware = compose(<span class="keyword">this</span>.middlewares);</span><br><span class="line">    <span class="keyword">const</span> context = <span class="keyword">this</span>.createContext(req, res);</span><br><span class="line">    middleware(context).then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">let</span> body = <span class="string">'koa response'</span>;</span><br><span class="line">      <span class="keyword">if</span> (context.body) &#123;</span><br><span class="line">        body = context.body;</span><br><span class="line">      &#125;</span><br><span class="line">      res.write(body);</span><br><span class="line">      res.end();</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">  createContext(req, res) &#123;</span><br><span class="line">    <span class="keyword">const</span> context = <span class="built_in">Object</span>.create(<span class="keyword">this</span>.context);</span><br><span class="line">    context.res = res;</span><br><span class="line">    context.req = req;</span><br><span class="line">    context.request = <span class="built_in">Object</span>.create(<span class="keyword">this</span>.request);</span><br><span class="line">    context.response = <span class="built_in">Object</span>.create(<span class="keyword">this</span>.response);</span><br><span class="line">    context.req = request.req = response.req = req;</span><br><span class="line">    context.res = request.res = response.res = res;</span><br><span class="line">    <span class="keyword">return</span> context;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> koa = <span class="keyword">new</span> Koa();</span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">middlewareA</span>(<span class="params">ctx, next</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.time(<span class="string">'responseTime'</span>);</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'middlewareA in'</span>);</span><br><span class="line">  <span class="built_in">console</span>.log(ctx.method); <span class="comment">// ctx.method 会被委托到 ctx.request.method</span></span><br><span class="line">  <span class="keyword">await</span> next();</span><br><span class="line">  <span class="built_in">console</span>.log(ctx.body);</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'middlewareA out'</span>);</span><br><span class="line">  <span class="built_in">console</span>.timeEnd(<span class="string">'responseTime'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">middlewareB</span>(<span class="params">ctx, next</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'middlewareB in'</span>);</span><br><span class="line">  ctx.res.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'text/html;charset=utf-8'</span>);</span><br><span class="line">  ctx.body = <span class="string">'reponse data.'</span>; <span class="comment">// ctx.body 会被委托到 ctx.response.body</span></span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'middlewareB out'</span>);</span><br><span class="line">&#125;</span><br><span class="line">koa.use(middlewareA);</span><br><span class="line">koa.use(middlewareB);</span><br><span class="line"><span class="keyword">const</span> server = koa.listen(<span class="number">3000</span>);</span><br><span class="line">server.on(<span class="string">'listening'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'listening on localhost:3000'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="六、代码放在-github-上"><a href="#六、代码放在-github-上" class="headerlink" title="六、代码放在 github 上"></a>六、代码放在 github 上</h3><p><a href="https://github.com/SimpleCodeCX/simple-koa" target="_blank" rel="noopener">https://github.com/SimpleCodeCX/simple-koa</a></p>
+    </div>
+  </div>
+  
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : Simple <br/>
+        
+        原文链接 : <a href="">https://simplecodecx.github.io/blog/20200512/50328b1d.html</a><br>
+        版权声明 : 本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明出处！
+        </blockquote>
+      </div>
+    </div>
+  
+  
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/后端/">
+              #后端
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/blog/20191210/5cab01ec.html" target="_self">Node WriteStream 可写流的实现原理</a>
+      </div>
+    
+    
+  </nav>
+
+  
+    <a href="#comment" class="comment-anchor"></a>
+<div class="comment-title"><i class="iconfont icon-footprint"></i> 留下足迹 <i class="iconfont icon-footprint"></i></div>
+<div id="vcomments"></div>
+
+<script defer>
+  if( true ) {
+    let path = getRealPath()
+    new Valine({
+      el: "#vcomments",
+      appId: "NBVBu5udttyakQLndVdiLdJp-gzGzoHsz",
+      appKey: "wwjYbDQ5B5IqDqtjfFwXn6I7",
+      notify: false,
+      verify: false,
+      avatar: "robohash",
+      placeholder: "正确填写邮箱, 才能及时收到回复哦♪(^∇^*)",
+      path
+    });
+  }
+</script>
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("NBVBu5udttyakQLndVdiLdJp-gzGzoHsz", "wwjYbDQ5B5IqDqtjfFwXn6I7");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
+</div>
+
+
+    <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+    <a style="font-weight:bold;" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=44133002100143" target="_blank">粤公网安备
+      44133002100143号</a>
+    <a style="font-weight:bold;" href="http://www.beian.miit.gov.cn" target="_blank">粤ICP备19031481号</a>
+  </p>
+</footer>
+
+
+
+<script>
+  const timeToNowDOM = document.querySelector("#time-to-now");
+  const startTimestamp = new Date(, , ).getTime();
+
+  const updateTimeStr = () => {
+    let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+      day = Math.floor(offset / 86400),
+      hour = Math.floor((offset % 86400) / 3600),
+      minute = Math.floor(((offset % 86400) % 3600) / 60),
+      second = Math.floor(((offset % 86400) % 3600) % 60);
+    timeToNowDOM.innerHTML =
+      day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+    setTimeout(updateTimeStr, 500);
+  }
+
+  setTimeout(updateTimeStr, 500);
+</script>
+
+    <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+  </div>
+
+  
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+  
+
+  <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+  
+</body>
+
+</html>
